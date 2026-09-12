@@ -1,168 +1,16 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AGRIVO - Dari Petani, Untuk Indonesia</title>
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        agrivo: {
-                            50: '#fdf2f2',
-                            100: '#fbe5e5',
-                            200: '#f5caca',
-                            300: '#efa2a2',
-                            400: '#e56c6c',
-                            500: '#db3e3e',
-                            600: '#c52020', // Merah Dominan Logo AGRIVO
-                            700: '#a51818',
-                            800: '#881717',
-                            900: '#721919',
-                        },
-                        agrivoGreen: {
-                            500: '#2b7a1f', // Hijau Daun/Pertanian Logo
-                        },
-                        agrivoBlue: {
-                            500: '#0070c0', // Biru Air/Perikanan Logo
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
-    <!-- React & ReactDOM -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    
-    <!-- Babel for JSX -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-    <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        .fade-in { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    </style>
-</head>
-<body>
-    <div id="root"></div>
-
-    <script type="text/babel">
-        const { useState, useEffect, useMemo } = React;
-
+<!-- ... existing code ... -->
         // ==========================================
         // 1. MOCK DATA LAYER (Simulating PostgreSQL/Laravel API)
         // ==========================================
         
         const MOCK_USERS = {
-            buyer: { id: 'u1', name: 'Ahmad Pembeli', role: 'BUYER', avatar: 'https://i.pravatar.cc/150?u=u1' },
-            seller: { id: 'u2', name: 'Pak Budi Farm', role: 'SELLER', avatar: 'https://i.pravatar.cc/150?u=u2', verified: true, location: 'Sidoarjo' },
-            admin: { id: 'u3', name: 'Admin AGRIVO', role: 'ADMIN', avatar: 'https://i.pravatar.cc/150?u=u3' }
+            buyer: { id: 'u1', name: 'Ahmad Pembeli', role: 'BUYER', avatar: 'https://i.pravatar.cc/150?u=u1', email: 'buyer@agrivo.com', password: 'password123' },
+            farmer: { id: 'u2', name: 'Pak Budi Farm', role: 'FARMER', avatar: 'https://i.pravatar.cc/150?u=u2', verified: true, location: 'Sidoarjo', email: 'farmer@agrivo.com', password: 'password123' },
+            admin: { id: 'u3', name: 'Admin AGRIVO', role: 'ADMIN', avatar: 'https://i.pravatar.cc/150?u=u3', email: 'admin@agrivo.com', password: 'password123' }
         };
 
         let MOCK_PRODUCTS = [
-            { id: 'p1', sellerId: 'u2', sellerName: 'Pak Budi Farm', name: 'Cabai Merah Besar Premium', category: 'Cabai', price: 28000, unit: 'kg', stock: 500, minOrder: 10, location: 'Sidoarjo, Jawa Timur', rating: 4.9, image: 'https://images.unsplash.com/photo-1588880196853-53372c019d9b?auto=format&fit=crop&q=80&w=800', description: 'Cabai merah besar segar langsung dari kebun. Cocok untuk industri makanan dan restoran. Dipanen setiap pagi.', status: 'APPROVED' },
-            { id: 'p2', sellerId: 'u2', sellerName: 'Tani Makmur', name: 'Jagung Pipilan Kering', category: 'Jagung', price: 6500, unit: 'kg', stock: 2000, minOrder: 50, location: 'Mojokerto, Jawa Timur', rating: 4.8, image: 'https://images.unsplash.com/photo-1601648764658-cf37e8c89b70?auto=format&fit=crop&q=80&w=800', description: 'Jagung pipilan kering kadar air 15%. Cocok untuk pakan ternak.', status: 'APPROVED' },
-            { id: 'p3', sellerId: 'u4', sellerName: 'Sumber Rejeki', name: 'Beras Premium Mentik Wangi', category: 'Padi & Beras', price: 15000, unit: 'kg', stock: 1000, minOrder: 25, location: 'Jember, Jawa Timur', rating: 5.0, image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&q=80&w=800', description: 'Beras premium tanpa pemutih dan pewangi buatan. Pulen dan wangi alami.', status: 'APPROVED' },
-            { id: 'p4', sellerId: 'u5', sellerName: 'Agro Sejahtera', name: 'Tomat Segar Grade A', category: 'Sayuran', price: 12000, unit: 'kg', stock: 800, minOrder: 20, location: 'Malang, Jawa Timur', rating: 4.7, image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=800', description: 'Tomat segar pilihan dari dataran tinggi Malang.', status: 'APPROVED' },
-            { id: 'p5', sellerId: 'u6', sellerName: 'Mitra Tani Jaya', name: 'Pupuk NPK Mutiara', category: 'Pupuk', price: 350000, unit: 'sak', stock: 100, minOrder: 1, location: 'Surabaya, Jawa Timur', rating: 4.9, image: 'https://images.unsplash.com/photo-1628543105315-9988b49e1a38?auto=format&fit=crop&q=80&w=800', description: 'Pupuk NPK lengkap untuk masa vegetatif dan generatif.', status: 'APPROVED' },
-        ];
-
-        let MOCK_ORDERS = [
-            { id: 'AGR-2026-000001', buyerId: 'u1', sellerId: 'u2', productId: 'p1', productName: 'Cabai Merah Besar Premium', qty: 50, price: 28000, subtotal: 1400000, fee: 10000, total: 1410000, status: 'PROCESSING', date: '2026-09-10' },
-            { id: 'AGR-2026-000002', buyerId: 'u1', sellerId: 'u4', productId: 'p3', productName: 'Beras Premium Mentik Wangi', qty: 100, price: 15000, subtotal: 1500000, fee: 15000, total: 1515000, status: 'COMPLETED', date: '2026-09-01' }
-        ];
-
-        let MOCK_CHATS = [
-            { id: 'c1', orderId: null, buyerId: 'u1', sellerId: 'u2', messages: [
-                { senderId: 'u1', text: 'Pak, kalau ambil 500 kg harganya bisa kurang?', time: '10:00' },
-                { senderId: 'u2', text: 'Bisa mas, kalau 500 kg saya kasih Rp26.000/kg.', time: '10:05' }
-            ]}
-        ];
-
-        const MOCK_LOCATIONS = {
-            provinces: [
-                { id: '35', name: 'Jawa Timur' },
-                { id: '33', name: 'Jawa Tengah' },
-                { id: '32', name: 'Jawa Barat' }
-            ],
-            cities: {
-                '35': [{ id: '3515', name: 'Kab. Sidoarjo' }, { id: '3578', name: 'Kota Surabaya' }, { id: '3573', name: 'Kota Malang' }],
-                '33': [{ id: '3374', name: 'Kota Semarang' }, { id: '3308', name: 'Kab. Magelang' }],
-                '32': [{ id: '3273', name: 'Kota Bandung' }, { id: '3201', name: 'Kab. Bogor' }]
-            },
-            districts: {
-                '3515': [{ id: '351501', name: 'Waru' }, { id: '351502', name: 'Taman' }, { id: '351503', name: 'Sidoarjo' }],
-                '3578': [{ id: '357801', name: 'Gubeng' }, { id: '357802', name: 'Wonokromo' }],
-                '3573': [{ id: '357301', name: 'Klojen' }, { id: '357302', name: 'Lowokwaru' }]
-            }
-        };
-
-        // ==========================================
-        // 1.5. GEMINI AI INTEGRATION
-        // ==========================================
-        const geminiApi = {
-            generateContent: async (contents, systemInstruction) => {
-                const apiKey = ""; // Canvas runtime injects key here
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-                
-                const payload = { contents };
-                if (systemInstruction) {
-                    payload.systemInstruction = { parts: [{ text: systemInstruction }] };
-                }
-
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                    const result = await response.json();
-                    return result?.candidates?.[0]?.content?.parts?.[0]?.text || "Maaf, terjadi kesalahan pemrosesan AI.";
-                } catch (error) {
-                    console.error("Gemini Error:", error);
-                    return "Gagal terhubung ke layanan AI AGRIVO.";
-                }
-            }
-        };
-
-        // API Service Simulation
-        const api = {
-            getProducts: async (search = '', category = '') => {
-                return MOCK_PRODUCTS.filter(p => 
-                    (p.name.toLowerCase().includes(search.toLowerCase()) || p.category.toLowerCase().includes(search.toLowerCase())) &&
-                    (category ? p.category === category : true)
-                );
-            },
-            getProductById: async (id) => MOCK_PRODUCTS.find(p => p.id === id),
-            createOrder: async (orderData) => {
-                const newOrder = {
-                    id: `AGR-2026-${String(MOCK_ORDERS.length + 1).padStart(6, '0')}`,
-                    ...orderData,
-                    status: 'PENDING',
-                    date: new Date().toISOString().split('T')[0]
-                };
-                MOCK_ORDERS.unshift(newOrder);
-                return newOrder;
-            },
+<!-- ... existing code ... -->
             getOrdersByUser: async (userId, role) => {
                 return MOCK_ORDERS.filter(o => role === 'BUYER' ? o.buyerId === userId : o.sellerId === userId);
             },
@@ -172,246 +20,47 @@
                 return order;
             },
             
-            register: async (payload) => {
-                // Simulate network latency & server processing
-                await new Promise(resolve => setTimeout(resolve, 1500));
+            login: async (email, password) => {
+                // Simulate network latency & database lookup
+                await new Promise(resolve => setTimeout(resolve, 1000));
                 
-                // Server-side validation simulation (Security Layer)
-                if (!payload.name || !payload.phone || !payload.password || !payload.provinceId) {
-                    return { success: false, message: 'Validasi gagal: Harap lengkapi data wajib.' };
-                }
-                if (payload.password !== payload.confirmPassword) {
-                    return { success: false, message: 'Validasi gagal: Konfirmasi password tidak cocok.' };
-                }
+                const users = Object.values(MOCK_USERS);
+                const user = users.find(u => u.email === email && u.password === password);
                 
-                // Mock Uniqueness Check against Database
-                if (payload.phone === '081234567890' || payload.phone === '+6281234567890') {
-                    return { success: false, message: 'Nomor WhatsApp tersebut sudah terdaftar. Silakan masuk atau gunakan nomor lain.' };
+                if (user) {
+                    // Security: Never return password to frontend
+                    const { password, ...userData } = user;
+                    return { success: true, message: 'Login berhasil', data: userData };
                 }
-
-                // Simulate DB Insert (Users + Profiles + Businesses)
-                const newUser = {
-                    id: 'u' + Date.now(),
-                    name: payload.name,
-                    phone: payload.phone,
-                    role: payload.role, 
-                    avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(payload.name)}&background=c52020&color=fff`,
-                    status: 'PENDING_VERIFICATION' // Strict state machine: requires OTP
-                };
-                
-                // Return success without logging user in yet (redirect to verification required)
-                return { success: true, message: 'Registrasi berhasil', data: { userId: newUser.id, phone: payload.phone } };
+                return { success: false, message: 'Email atau password salah.' };
             },
             
-            verifyOTP: async (userId, otp) => {
-                // Simulate DB check for OTP validity
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                if (otp === '123456') { // Mock valid OTP for Acceptance Test
-                    return { success: true, message: 'Akun berhasil diverifikasi.' };
-                }
-                return { success: false, message: 'Kode OTP tidak valid atau telah kedaluwarsa.' };
-            }
-        };
-
-        // ==========================================
-        // 2. REUSABLE UI COMPONENTS
-        // ==========================================
-
-        const formatCurrency = (amount) => {
-            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount);
-        };
-
-        const Badge = ({ children, type = 'default' }) => {
-            const colors = {
-                success: 'bg-green-100 text-green-800',
-                warning: 'bg-yellow-100 text-yellow-800',
-                danger: 'bg-red-100 text-red-800',
-                info: 'bg-blue-100 text-blue-800',
-                default: 'bg-gray-100 text-gray-800'
-            };
-            return <span className={`px-2 py-1 text-xs font-medium rounded-full ${colors[type]}`}>{children}</span>;
-        };
-
-        const Button = ({ children, variant = 'primary', className = '', onClick, disabled }) => {
-            const baseStyle = "inline-flex items-center justify-center px-4 py-2 font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
-            const variants = {
-                primary: "bg-agrivo-600 hover:bg-agrivo-700 text-white focus:ring-agrivo-500",
-                secondary: "bg-agrivo-50 hover:bg-agrivo-100 text-agrivo-700 focus:ring-agrivo-500",
-                outline: "border border-gray-300 bg-white hover:bg-gray-50 text-gray-700 focus:ring-agrivo-500",
-                danger: "bg-red-600 hover:bg-red-700 text-white focus:ring-red-500"
-            };
-            return (
-                <button disabled={disabled} onClick={onClick} className={`${baseStyle} ${variants[variant]} ${className}`}>
-                    {children}
-                </button>
-            );
-        };
-
-        const InputGroup = ({ label, type = 'text', value, onChange, placeholder, icon, required, error, disabled }) => {
-            return (
-                <div className="mb-4">
-                    {label && <label className="block text-sm font-semibold text-gray-700 mb-1.5">{label} {required && <span className="text-red-500">*</span>}</label>}
-                    <div className="relative">
-                        {icon && <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400"><i className={`fa-solid ${icon}`}></i></div>}
-                        <input 
-                            type={type} 
-                            value={value} 
-                            onChange={onChange} 
-                            placeholder={placeholder}
-                            disabled={disabled}
-                            className={`w-full border ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-agrivo-600'} rounded-xl py-3 ${icon ? 'pl-10' : 'pl-4'} pr-4 outline-none focus:ring-2 focus:border-transparent transition-all disabled:bg-gray-50 disabled:text-gray-500 text-sm placeholder-gray-400`}
-                        />
-                    </div>
-                    {error && <p className="mt-1.5 text-xs text-red-500 flex items-center"><i className="fa-solid fa-circle-exclamation mr-1.5"></i> {error}</p>}
-                </div>
-            );
-        };
-
-        const PasswordInput = ({ label, value, onChange, placeholder, required, error }) => {
-            const [show, setShow] = useState(false);
-            return (
-                <div className="mb-4">
-                    {label && <label className="block text-sm font-semibold text-gray-700 mb-1.5">{label} {required && <span className="text-red-500">*</span>}</label>}
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400"><i className="fa-solid fa-lock"></i></div>
-                        <input 
-                            type={show ? 'text' : 'password'} 
-                            value={value} 
-                            onChange={onChange} 
-                            placeholder={placeholder}
-                            className={`w-full border ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-agrivo-600'} rounded-xl py-3 pl-10 pr-12 outline-none focus:ring-2 focus:border-transparent transition-all text-sm placeholder-gray-400`}
-                        />
-                        <button type="button" onClick={() => setShow(!show)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none transition-colors">
-                            <i className={`fa-regular ${show ? 'fa-eye-slash' : 'fa-eye'}`}></i>
-                        </button>
-                    </div>
-                    {error && <p className="mt-1.5 text-xs text-red-500 flex items-center"><i className="fa-solid fa-circle-exclamation mr-1.5"></i> {error}</p>}
-                </div>
-            );
-        };
-
-        const SelectGroup = ({ label, value, onChange, options, placeholder, required, error, disabled }) => {
-            return (
-                <div className="mb-4">
-                    {label && <label className="block text-sm font-semibold text-gray-700 mb-1.5">{label} {required && <span className="text-red-500">*</span>}</label>}
-                    <select 
-                        value={value} 
-                        onChange={onChange}
-                        disabled={disabled}
-                        className={`w-full border ${error ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-agrivo-600'} rounded-xl py-3 px-4 outline-none focus:ring-2 focus:border-transparent transition-all disabled:bg-gray-50 text-sm bg-white appearance-none cursor-pointer`}
-                        style={{ backgroundImage: 'url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%239CA3AF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 1rem top 50%', backgroundSize: '.65rem auto' }}
-                    >
-                        <option value="" disabled>{placeholder}</option>
-                        {options.map(opt => <option key={opt.id} value={opt.id}>{opt.name}</option>)}
-                    </select>
-                    {error && <p className="mt-1.5 text-xs text-red-500 flex items-center"><i className="fa-solid fa-circle-exclamation mr-1.5"></i> {error}</p>}
-                </div>
-            );
-        };
-
-        const ProductCard = ({ product, onClick }) => (
-            <div onClick={onClick} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col h-full group">
-                <div className="relative h-48 overflow-hidden bg-gray-100">
-                    <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-lg text-xs font-bold text-gray-700 flex items-center shadow-sm">
-                        <i className="fa-solid fa-star text-yellow-400 mr-1"></i> {product.rating}
-                    </div>
-                </div>
-                <div className="p-4 flex flex-col flex-grow">
-                    <h3 className="font-semibold text-gray-800 line-clamp-2 mb-1">{product.name}</h3>
-                    <p className="text-agrivo-600 font-bold text-lg mb-2">{formatCurrency(product.price)} <span className="text-sm font-normal text-gray-500">/{product.unit}</span></p>
-                    
-                    <div className="mt-auto space-y-2">
-                        <div className="flex items-center text-xs text-gray-500">
-                            <i className="fa-solid fa-location-dot mr-1.5 w-3 text-center"></i>
-                            <span className="truncate">{product.location}</span>
-                        </div>
-                        <div className="flex items-center text-xs text-gray-500">
-                            <i className="fa-solid fa-box mr-1.5 w-3 text-center"></i>
-                            Stok: {product.stock} {product.unit}
-                        </div>
-                        <div className="flex items-center text-xs text-gray-500">
-                            <i className="fa-solid fa-shop mr-1.5 w-3 text-center"></i>
-                            <span className="truncate">{product.sellerName}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-
+            register: async (payload) => {
+<!-- ... existing code ... -->
         // ==========================================
         // 3. PAGES
         // ==========================================
 
-        const RegisterPage = ({ navigate, showToast }) => {
-            const [role, setRole] = useState('BUYER');
-            const [formData, setFormData] = useState({
-                name: '', phone: '', email: '', password: '', confirmPassword: '',
-                provinceId: '', cityId: '', districtId: '',
-                businessName: '', businessType: ''
-            });
+        const LoginPage = ({ navigate, showToast, onLoginSuccess }) => {
+            const [formData, setFormData] = useState({ email: '', password: '' });
             const [errors, setErrors] = useState({});
-            const [agreed, setAgreed] = useState(false);
             const [isLoading, setIsLoading] = useState(false);
             const [serverError, setServerError] = useState('');
 
-            // Nested Location Logic (Frontend Validation State)
-            const provinces = MOCK_LOCATIONS.provinces;
-            const cities = formData.provinceId ? MOCK_LOCATIONS.cities[formData.provinceId] || [] : [];
-            const districts = formData.cityId ? MOCK_LOCATIONS.districts[formData.cityId] || [] : [];
-
-            // Password strength calculator (Security UX Requirement)
-            const getPasswordStrength = (pass) => {
-                let score = 0;
-                if (pass.length >= 8) score += 1;
-                if (/[A-Z]/.test(pass)) score += 1;
-                if (/[a-z]/.test(pass)) score += 1;
-                if (/[0-9]/.test(pass)) score += 1;
-                return score; // Range: 0 to 4
-            };
-            const pwdScore = getPasswordStrength(formData.password);
-
             const handleChange = (e, field) => {
                 setFormData(prev => ({ ...prev, [field]: e.target.value }));
-                
-                // Cascade drop-downs logic
-                if (field === 'provinceId') setFormData(prev => ({ ...prev, cityId: '', districtId: '' }));
-                if (field === 'cityId') setFormData(prev => ({ ...prev, districtId: '' }));
-                
-                // Clear error state proactively as user types
                 if (errors[field]) setErrors(prev => ({ ...prev, [field]: null }));
                 if (serverError) setServerError('');
             };
 
             const validateForm = () => {
                 const newErrs = {};
-                // Name Validation
-                if (!formData.name || formData.name.length < 3) newErrs.name = 'Nama lengkap minimal 3 karakter';
-                
-                // Indonesian Phone Number Validation (Regex)
-                if (!formData.phone || !/^(\+62|62|0)8[1-9][0-9]{6,10}$/.test(formData.phone)) {
-                    newErrs.phone = 'Format nomor handphone tidak valid (contoh: 0812...)';
-                }
-                
-                // Optional Email Validation
-                if (formData.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+                if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
                     newErrs.email = 'Format email tidak valid';
                 }
-
-                // Password Policy
-                if (pwdScore < 4) newErrs.password = 'Password minimal 8 karakter, mengandung huruf besar, kecil, dan angka';
-                if (formData.password !== formData.confirmPassword) newErrs.confirmPassword = 'Konfirmasi password tidak cocok';
-                
-                // Location Policy
-                if (!formData.provinceId) newErrs.provinceId = 'Provinsi wajib dipilih';
-                if (!formData.cityId) newErrs.cityId = 'Kota/Kabupaten wajib dipilih';
-                
-                // Seller Specific Policy
-                if (role === 'SELLER') {
-                    if (!formData.businessName) newErrs.businessName = 'Nama Usaha wajib diisi';
-                    if (!formData.businessType) newErrs.businessType = 'Jenis Usaha wajib dipilih';
+                if (!formData.password || formData.password.length < 8) {
+                    newErrs.password = 'Password minimal 8 karakter';
                 }
-
                 setErrors(newErrs);
                 return Object.keys(newErrs).length === 0;
             };
@@ -419,275 +68,149 @@
             const handleSubmit = async (e) => {
                 e.preventDefault();
                 if (!validateForm()) return;
-                if (!agreed) return setServerError('Anda harus menyetujui Syarat & Ketentuan serta Kebijakan Privasi.');
 
                 setIsLoading(true);
                 try {
-                    // Pre-process phone formatting (Normalize to +62 format before sending to DB)
-                    let formattedPhone = formData.phone;
-                    if (formattedPhone.startsWith('0')) formattedPhone = '+62' + formattedPhone.substring(1);
-                    else if (formattedPhone.startsWith('62')) formattedPhone = '+' + formattedPhone;
-
-                    const payload = { ...formData, phone: formattedPhone, role };
-                    const response = await api.register(payload);
-                    
+                    const response = await api.login(formData.email, formData.password);
                     if (response.success) {
-                        // Routing to standard OTP verify flow (prevent direct login)
-                        navigate(`/verify?userId=${response.data.userId}&phone=${encodeURIComponent(formattedPhone)}`);
+                        showToast(response.message, 'success');
+                        onLoginSuccess(response.data);
                     } else {
                         setServerError(response.message);
                     }
                 } catch (err) {
-                    setServerError('Koneksi bermasalah. Periksa internet Anda dan coba kembali.');
+                    setServerError('Koneksi bermasalah. Periksa internet Anda.');
                 } finally {
                     setIsLoading(false);
                 }
             };
 
             return (
-                <div className="min-h-screen bg-gray-50 flex fade-in">
-                    {/* Left Branding Area (Desktop Only) - Split Layout */}
-                    <div className="hidden lg:flex w-5/12 relative flex-col justify-between p-14 overflow-hidden">
-                        {/* Background Overlay */}
-                        <div className="absolute inset-0 bg-agrivo-900">
-                            <div className="absolute inset-0 opacity-40 bg-[url('https://images.unsplash.com/photo-1595841696677-6489ff3f8cd1?auto=format&fit=crop&q=80&w=1200')] bg-cover bg-center mix-blend-overlay"></div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-agrivo-900 via-transparent to-agrivo-900/50"></div>
-                        </div>
-                        
-                        <div className="relative z-10">
-                            <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
+                <div className="min-h-[80vh] flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8 fade-in">
+                    <div className="max-w-md w-full bg-white p-8 sm:p-10 rounded-[2rem] shadow-xl border border-gray-100">
+                        <div className="text-center mb-8">
+                            <div className="flex items-center justify-center cursor-pointer mb-6" onClick={() => navigate('/')}>
                                 <div className="relative w-10 h-10 mr-3 flex items-center justify-center">
-                                    <i className="fa-solid fa-leaf text-agrivoGreen-500 absolute top-0 right-0 text-sm drop-shadow-md"></i>
-                                    <i className="fa-solid fa-water text-agrivoBlue-500 absolute bottom-0 right-0 text-sm drop-shadow-md"></i>
-                                    <span className="text-white font-extrabold text-4xl font-serif tracking-tighter drop-shadow-md">A</span>
+                                    <i className="fa-solid fa-leaf text-agrivoGreen-500 absolute top-0 right-0 text-sm"></i>
+                                    <i className="fa-solid fa-water text-agrivoBlue-500 absolute bottom-0 right-0 text-sm"></i>
+                                    <span className="text-agrivo-600 font-extrabold text-3xl font-serif tracking-tighter">A</span>
                                 </div>
-                                <span className="font-extrabold text-3xl tracking-tighter text-white drop-shadow-md">AGRIVO</span>
+                                <span className="font-extrabold text-3xl tracking-tighter text-agrivo-600">AGRIVO</span>
                             </div>
+                            <h2 className="text-2xl font-bold text-gray-900">Selamat Datang Kembali</h2>
+                            <p className="text-gray-500 mt-2 text-sm">Masuk untuk mengelola aktivitas pertanian Anda.</p>
+                        </div>
+
+                        {serverError && (
+                            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start text-red-700 text-sm fade-in">
+                                <i className="fa-solid fa-triangle-exclamation mt-0.5 mr-3 text-red-500"></i>
+                                <span className="font-medium">{serverError}</span>
+                            </div>
+                        )}
+
+                        <form onSubmit={handleSubmit} className="space-y-6">
+                            <InputGroup 
+                                label="Email" 
+                                type="email" 
+                                placeholder="nama@email.com" 
+                                icon="fa-envelope" 
+                                required 
+                                value={formData.email} 
+                                onChange={e => handleChange(e, 'email')} 
+                                error={errors.email} 
+                            />
                             
-                            <div className="mt-20 max-w-sm">
-                                <Badge type="success" className="bg-white/10 text-agrivo-100 border border-white/20 backdrop-blur-sm shadow-sm font-semibold mb-6">Ekosistem Pertanian Digital</Badge>
-                                <h1 className="text-4xl lg:text-5xl font-bold text-white leading-tight">
-                                    Mulai langkah Anda untuk Pertanian Indonesia.
-                                </h1>
-                                <p className="text-agrivo-100 mt-6 text-lg leading-relaxed font-light">
-                                    Bergabung dengan jaringan terluas pelaku usaha, petani, dan pembeli dari seluruh nusantara secara transparan dan aman.
-                                </p>
-                            </div>
-                        </div>
-                        
-                        <div className="relative z-10 text-agrivo-200 text-sm font-medium">
-                            &copy; 2026 AGRIVO Platform Digital
-                        </div>
-                    </div>
-
-                    {/* Right Form Area */}
-                    <div className="w-full lg:w-7/12 flex justify-center py-8 md:py-12 px-4 sm:px-6 lg:px-16 overflow-y-auto bg-white">
-                        <div className="w-full max-w-[540px]">
-                            {/* Mobile Header (Hidden on Desktop) */}
-                            <div className="lg:hidden flex items-center justify-center mb-8 cursor-pointer" onClick={() => navigate('/')}>
-                                <div className="relative w-8 h-8 mr-2 flex items-center justify-center">
-                                    <i className="fa-solid fa-leaf text-agrivoGreen-500 absolute top-0 right-0 text-[10px]"></i>
-                                    <i className="fa-solid fa-water text-agrivoBlue-500 absolute bottom-0 right-0 text-[10px]"></i>
-                                    <span className="text-agrivo-600 font-extrabold text-2xl font-serif tracking-tighter">A</span>
+                            <div>
+                                <PasswordInput 
+                                    label="Password" 
+                                    placeholder="Masukkan password Anda" 
+                                    required 
+                                    value={formData.password} 
+                                    onChange={e => handleChange(e, 'password')} 
+                                    error={errors.password} 
+                                />
+                                <div className="flex justify-end -mt-2 mb-4">
+                                    <a href="#" className="text-xs font-semibold text-agrivo-600 hover:text-agrivo-700 hover:underline">Lupa Password?</a>
                                 </div>
-                                <span className="font-extrabold text-2xl tracking-tighter text-agrivo-600">AGRIVO</span>
                             </div>
 
-                            <div className="mb-8">
-                                <h2 className="text-3xl font-bold text-gray-900">Buat Akun AGRIVO</h2>
-                                <p className="text-gray-500 mt-2 text-[15px]">Bergabung dengan ekosistem pertanian Indonesia.</p>
+                            <Button type="submit" disabled={isLoading} className="w-full py-4 text-lg rounded-xl shadow-[0_4px_14px_0_rgba(197,32,32,0.39)] hover:shadow-[0_6px_20px_rgba(197,32,32,0.23)] hover:-translate-y-0.5 transition-all duration-200">
+                                {isLoading ? (
+                                    <><i className="fa-solid fa-circle-notch fa-spin mr-2"></i> Memproses...</>
+                                ) : 'Masuk ke AGRIVO'}
+                            </Button>
+                        </form>
+
+                        <div className="mt-8 text-center border-t border-gray-100 pt-6">
+                            <p className="text-sm text-gray-600">
+                                Belum punya akun? <a onClick={() => navigate('/register')} className="font-bold text-agrivo-600 hover:text-agrivo-700 cursor-pointer hover:underline">Daftar Sekarang</a>
+                            </p>
+                            
+                            {/* Dev Helper Info (Untuk mempermudah Testing) */}
+                            <div className="mt-6 p-3 bg-blue-50 text-blue-800 rounded-lg text-xs text-left border border-blue-100">
+                                <p className="font-bold mb-1"><i className="fa-solid fa-circle-info mr-1"></i> Demo Akun (Email & Pass: password123):</p>
+                                <ul className="list-disc pl-4 space-y-0.5 opacity-80">
+                                    <li>Pembeli: buyer@agrivo.com</li>
+                                    <li>Petani: farmer@agrivo.com</li>
+                                    <li>Admin: admin@agrivo.com</li>
+                                </ul>
                             </div>
-
-                            {serverError && (
-                                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start text-red-700 text-sm fade-in">
-                                    <i className="fa-solid fa-triangle-exclamation mt-0.5 mr-3 text-red-500"></i>
-                                    <span className="font-medium">{serverError}</span>
-                                </div>
-                            )}
-
-                            <form onSubmit={handleSubmit} className="space-y-8">
-                                {/* Account Type Selection */}
-                                <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-3">Saya ingin mendaftar sebagai:</label>
-                                    <div className="grid grid-cols-2 gap-3 md:gap-4">
-                                        <div 
-                                            onClick={() => setRole('BUYER')} 
-                                            className={`p-4 md:p-5 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center text-center group ${role === 'BUYER' ? 'border-agrivo-600 bg-agrivo-50/50 shadow-sm' : 'border-gray-200 bg-white hover:border-agrivo-300'}`}
-                                        >
-                                            <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-3 transition-colors ${role === 'BUYER' ? 'bg-agrivo-600 text-white' : 'bg-gray-100 text-gray-400 group-hover:bg-agrivo-100 group-hover:text-agrivo-600'}`}>
-                                                <i className="fa-solid fa-basket-shopping text-base md:text-lg"></i>
-                                            </div>
-                                            <span className={`font-bold text-xs md:text-sm ${role === 'BUYER' ? 'text-agrivo-900' : 'text-gray-700'}`}>Pembeli</span>
-                                            <span className="text-[10px] md:text-xs text-gray-500 mt-1 leading-tight">Mencari & belanja kebutuhan</span>
-                                        </div>
-                                        <div 
-                                            onClick={() => setRole('SELLER')} 
-                                            className={`p-4 md:p-5 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center text-center group ${role === 'SELLER' ? 'border-agrivo-600 bg-agrivo-50/50 shadow-sm' : 'border-gray-200 bg-white hover:border-agrivo-300'}`}
-                                        >
-                                            <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-3 transition-colors ${role === 'SELLER' ? 'bg-agrivo-600 text-white' : 'bg-gray-100 text-gray-400 group-hover:bg-agrivo-100 group-hover:text-agrivo-600'}`}>
-                                                <i className="fa-solid fa-store text-base md:text-lg"></i>
-                                            </div>
-                                            <span className={`font-bold text-xs md:text-sm ${role === 'SELLER' ? 'text-agrivo-900' : 'text-gray-700'}`}>Penjual / Petani</span>
-                                            <span className="text-[10px] md:text-xs text-gray-500 mt-1 leading-tight">Buka toko & jual hasil panen</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Form Section 1: Personal Data */}
-                                <div>
-                                    <h3 className="font-bold text-gray-900 text-lg mb-4 flex items-center">
-                                        <span className="w-6 h-6 rounded-full bg-agrivo-100 text-agrivo-600 flex items-center justify-center text-xs mr-2">1</span> 
-                                        Informasi Pribadi
-                                    </h3>
-                                    <div className="space-y-1">
-                                        <InputGroup label="Nama Lengkap" placeholder="Contoh: Budi Santoso" icon="fa-user" required value={formData.name} onChange={e => handleChange(e, 'name')} error={errors.name} />
-                                        
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-                                            <InputGroup label="No. WhatsApp" type="tel" placeholder="08xxxxxxxxxx" icon="fa-whatsapp" required value={formData.phone} onChange={e => handleChange(e, 'phone')} error={errors.phone} />
-                                            <InputGroup label="Email (Opsional)" type="email" placeholder="nama@email.com" icon="fa-envelope" value={formData.email} onChange={e => handleChange(e, 'email')} error={errors.email} />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Form Section 2: Security */}
-                                <div>
-                                    <h3 className="font-bold text-gray-900 text-lg mb-4 flex items-center">
-                                        <span className="w-6 h-6 rounded-full bg-agrivo-100 text-agrivo-600 flex items-center justify-center text-xs mr-2">2</span> 
-                                        Keamanan Akun
-                                    </h3>
-                                    <div className="space-y-1">
-                                        <PasswordInput label="Buat Password" placeholder="Minimal 8 karakter" required value={formData.password} onChange={e => handleChange(e, 'password')} error={errors.password} />
-                                        
-                                        {/* Security: Visual Password Strength Indicator */}
-                                        {formData.password && (
-                                            <div className="flex gap-1.5 mb-5 px-1">
-                                                {[1, 2, 3, 4].map(level => (
-                                                    <div key={level} className={`h-1.5 w-full rounded-full transition-colors duration-300 ${pwdScore >= level ? (pwdScore < 3 ? 'bg-yellow-400' : 'bg-green-500') : 'bg-gray-100'}`}></div>
-                                                ))}
-                                            </div>
-                                        )}
-
-                                        <PasswordInput label="Konfirmasi Password" placeholder="Ulangi password di atas" required value={formData.confirmPassword} onChange={e => handleChange(e, 'confirmPassword')} error={errors.confirmPassword} />
-                                    </div>
-                                </div>
-
-                                {/* Dynamic Section: Seller Business Info */}
-                                {role === 'SELLER' && (
-                                    <div className="bg-agrivo-50/50 p-6 rounded-2xl border border-agrivo-100 shadow-sm fade-in">
-                                        <h3 className="font-bold text-agrivo-900 text-lg mb-4 flex items-center">
-                                            <i className="fa-solid fa-shop text-agrivo-600 mr-2"></i>
-                                            Profil Usaha
-                                        </h3>
-                                        <div className="space-y-1">
-                                            <InputGroup label="Nama Usaha / Toko" placeholder="Contoh: Tani Makmur Sidoarjo" icon="fa-briefcase" required value={formData.businessName} onChange={e => handleChange(e, 'businessName')} error={errors.businessName} />
-                                            <SelectGroup 
-                                                label="Bidang Usaha" 
-                                                placeholder="Pilih Bidang..." 
-                                                options={[
-                                                    {id: 'Petani', name: 'Petani Pribadi / Kelompok Tani'},
-                                                    {id: 'Distributor', name: 'Distributor / Pengepul'},
-                                                    {id: 'Toko', name: 'Toko Kebutuhan Pertanian'},
-                                                    {id: 'Industri', name: 'Pengolahan Hasil / Restoran'}
-                                                ]}
-                                                required value={formData.businessType} onChange={e => handleChange(e, 'businessType')} error={errors.businessType} 
-                                            />
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Form Section 3: Location */}
-                                <div>
-                                    <h3 className="font-bold text-gray-900 text-lg mb-4 flex items-center">
-                                        <span className="w-6 h-6 rounded-full bg-agrivo-100 text-agrivo-600 flex items-center justify-center text-xs mr-2">3</span> 
-                                        Lokasi {role === 'SELLER' ? 'Usaha' : 'Pengiriman Utama'}
-                                    </h3>
-                                    <div className="space-y-1">
-                                        <SelectGroup label="Provinsi" placeholder="Pilih Provinsi..." options={provinces} required value={formData.provinceId} onChange={e => handleChange(e, 'provinceId')} error={errors.provinceId} />
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4">
-                                            <SelectGroup label="Kabupaten / Kota" placeholder="Pilih Kota..." options={cities} required disabled={!formData.provinceId} value={formData.cityId} onChange={e => handleChange(e, 'cityId')} error={errors.cityId} />
-                                            <SelectGroup label="Kecamatan" placeholder="Pilih Kecamatan..." options={districts} required disabled={!formData.cityId} value={formData.districtId} onChange={e => handleChange(e, 'districtId')} error={errors.districtId} />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* User Consent & Submit */}
-                                <div className="pt-4 border-t border-gray-100">
-                                    <label className="flex items-start cursor-pointer group mb-6">
-                                        <div className="flex items-center h-5 mt-0.5">
-                                            <input type="checkbox" checked={agreed} onChange={e => setAgreed(e.target.checked)} className="w-5 h-5 text-agrivo-600 border-gray-300 rounded focus:ring-agrivo-600 cursor-pointer transition-colors" />
-                                        </div>
-                                        <div className="ml-3 text-sm leading-relaxed text-gray-600">
-                                            Dengan mendaftar, saya menyetujui <a href="#" className="text-agrivo-600 font-semibold hover:underline">Syarat & Ketentuan</a> serta <a href="#" className="text-agrivo-600 font-semibold hover:underline">Kebijakan Privasi</a> yang berlaku di ekosistem AGRIVO.
-                                        </div>
-                                    </label>
-
-                                    <Button type="submit" disabled={isLoading || !agreed} className="w-full py-4 text-lg rounded-xl shadow-[0_4px_14px_0_rgba(197,32,32,0.39)] hover:shadow-[0_6px_20px_rgba(197,32,32,0.23)] hover:-translate-y-0.5 transition-all duration-200">
-                                        {isLoading ? (
-                                            <><i className="fa-solid fa-circle-notch fa-spin mr-2"></i> Memproses...</>
-                                        ) : 'Buat Akun Sekarang'}
-                                    </Button>
-                                </div>
-
-                                {/* Optional Auth Methods (Scalability prep) */}
-                                <div className="relative flex items-center justify-center mt-8">
-                                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-gray-200"></div></div>
-                                    <div className="relative bg-white px-4 text-xs text-gray-400 font-bold uppercase tracking-widest">Atau Daftar Dengan</div>
-                                </div>
-                                
-                                <button type="button" className="mt-6 w-full flex items-center justify-center px-4 py-3.5 border border-gray-200 shadow-sm text-sm font-semibold rounded-xl text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-agrivo-500 transition-colors">
-                                    <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-                                    Google
-                                </button>
-
-                                <p className="text-center text-sm text-gray-600 mt-10 pb-8">
-                                    Sudah memiliki akun? <a onClick={() => { showToast('Halaman Login belum tersedia di prototipe. Gunakan Panel Simulasi Login di pojok kanan bawah.', 'info'); }} className="font-bold text-agrivo-600 hover:text-agrivo-700 cursor-pointer hover:underline">Masuk di sini</a>
-                                </p>
-                            </form>
                         </div>
                     </div>
                 </div>
             );
         };
 
-        const VerifyOTPPage = ({ route, navigate, showToast }) => {
-            const [otp, setOtp] = useState(['', '', '', '', '', '']);
-            const [timer, setTimer] = useState(30);
-            const [error, setError] = useState('');
-            const [isLoading, setIsLoading] = useState(false);
-            
-            // Extract parameters from URL safely in SPA mode
-            const params = new URLSearchParams(route.split('?')[1]);
-            const phone = params.get('phone') || '+628XXXXXXXXX';
-            const userId = params.get('userId');
-            
-            const inputs = React.useRef([]);
+        const RegisterPage = ({ navigate, showToast }) => {
+<!-- ... existing code ... -->
+                                        <div 
+                                            onClick={() => setRole('FARMER')} 
+                                            className={`p-4 md:p-5 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center text-center group ${role === 'FARMER' ? 'border-agrivo-600 bg-agrivo-50/50 shadow-sm' : 'border-gray-200 bg-white hover:border-agrivo-300'}`}
+                                        >
+                                            <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-3 transition-colors ${role === 'FARMER' ? 'bg-agrivo-600 text-white' : 'bg-gray-100 text-gray-400 group-hover:bg-agrivo-100 group-hover:text-agrivo-600'}`}>
+                                                <i className="fa-solid fa-tractor text-base md:text-lg"></i>
+                                            </div>
+                                            <span className={`font-bold text-xs md:text-sm ${role === 'FARMER' ? 'text-agrivo-900' : 'text-gray-700'}`}>Petani / Penjual</span>
+                                            <span className="text-[10px] md:text-xs text-gray-500 mt-1 leading-tight">Buka toko & jual hasil panen</span>
+                                        </div>
+                                    </div>
+                                </div>
 
-            useEffect(() => {
-                let interval = setInterval(() => {
-                    setTimer(prev => prev > 0 ? prev - 1 : 0);
-                }, 1000);
-                return () => clearInterval(interval);
-            }, []);
-
-            const handleChange = (e, index) => {
-                const val = e.target.value;
-                if (/[^0-9]/.test(val)) return; // Strict numeric constraint
+                                {/* Form Section 1: Personal Data */}
+<!-- ... existing code ... -->
+                // Location Policy
+                if (!formData.provinceId) newErrs.provinceId = 'Provinsi wajib dipilih';
+                if (!formData.cityId) newErrs.cityId = 'Kota/Kabupaten wajib dipilih';
                 
-                const newOtp = [...otp];
-                newOtp[index] = val;
-                setOtp(newOtp);
-
-                // Auto-advance cursor
-                if (val && index < 5) inputs.current[index + 1].focus();
-            };
-
-            const handleKeyDown = (e, index) => {
-                // Auto-backspace cursor
-                if (e.key === 'Backspace' && !otp[index] && index > 0) {
-                    inputs.current[index - 1].focus();
+                // Seller Specific Policy
+                if (role === 'FARMER') {
+                    if (!formData.businessName) newErrs.businessName = 'Nama Usaha wajib diisi';
+                    if (!formData.businessType) newErrs.businessType = 'Jenis Usaha wajib dipilih';
                 }
-            };
 
+                setErrors(newErrs);
+<!-- ... existing code ... -->
+                                {/* Dynamic Section: Seller Business Info */}
+                                {role === 'FARMER' && (
+                                    <div className="bg-agrivo-50/50 p-6 rounded-2xl border border-agrivo-100 shadow-sm fade-in">
+                                        <h3 className="font-bold text-agrivo-900 text-lg mb-4 flex items-center">
+                                            <i className="fa-solid fa-shop text-agrivo-600 mr-2"></i>
+                                            Profil Usaha Tani
+                                        </h3>
+<!-- ... existing code ... -->
+                                {/* Form Section 3: Location */}
+                                <div>
+                                    <h3 className="font-bold text-gray-900 text-lg mb-4 flex items-center">
+                                        <span className="w-6 h-6 rounded-full bg-agrivo-100 text-agrivo-600 flex items-center justify-center text-xs mr-2">3</span> 
+                                        Lokasi {role === 'FARMER' ? 'Usaha' : 'Pengiriman Utama'}
+                                    </h3>
+<!-- ... existing code ... -->
+                                <p className="text-center text-sm text-gray-600 mt-10 pb-8">
+                                    Sudah memiliki akun? <a onClick={() => navigate('/login')} className="font-bold text-agrivo-600 hover:text-agrivo-700 cursor-pointer hover:underline">Masuk di sini</a>
+                                </p>
+                            </form>
+                        </div>
+<!-- ... existing code ... -->
             const handleVerify = async () => {
                 const code = otp.join('');
                 if (code.length < 6) return setError('Harap masukkan 6 digit kode secara lengkap.');
@@ -698,641 +221,33 @@
                     const response = await api.verifyOTP(userId, code);
                     if (response.success) {
                         // User successfully verified. Ready for onboarding.
-                        showToast('Verifikasi Berhasil! Akun aktif. Mengarahkan Anda ke Dashboard...', 'success');
-                        setTimeout(() => navigate('/marketplace'), 1500); 
+                        showToast('Verifikasi Berhasil! Akun aktif. Silakan masuk dengan akun Anda.', 'success');
+                        setTimeout(() => navigate('/login'), 1500); 
                     } else {
                         setError(response.message);
                     }
                 } catch (e) {
-                    setError('Koneksi bermasalah. Periksa internet Anda.');
-                } finally {
-                    setIsLoading(false);
-                }
-            };
-
-            return (
-                <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 fade-in relative overflow-hidden">
-                    {/* Background Decor */}
-                    <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-agrivo-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
-                    <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-agrivoGreen-100 rounded-full mix-blend-multiply filter blur-3xl opacity-50"></div>
-                    
-                    <div className="bg-white p-8 sm:p-12 rounded-[2rem] shadow-xl border border-gray-100 max-w-md w-full text-center relative z-10">
-                        <div className="w-24 h-24 bg-agrivo-50 text-agrivo-600 rounded-full flex items-center justify-center text-4xl mx-auto mb-6 shadow-inner">
-                            <i className="fa-solid fa-shield-check"></i>
-                        </div>
-                        <h2 className="text-3xl font-bold text-gray-900 mb-3 tracking-tight">Verifikasi OTP</h2>
-                        <p className="text-gray-500 text-sm mb-8 leading-relaxed">
-                            Demi keamanan, kami telah mengirimkan 6 digit kode rahasia ke WhatsApp <br/>
-                            <span className="font-bold text-gray-900 bg-gray-100 px-2 py-1 rounded-md mt-2 inline-block">{phone}</span>
-                        </p>
-
-                        {error && <div className="mb-8 p-3 bg-red-50 text-red-600 text-sm font-medium rounded-xl border border-red-100 fade-in">{error}</div>}
-
-                        <div className="flex justify-center gap-2 sm:gap-3 mb-10 direction-ltr">
-                            {otp.map((digit, i) => (
-                                <input
-                                    key={i}
-                                    ref={el => inputs.current[i] = el}
-                                    type="text"
-                                    maxLength="1"
-                                    value={digit}
-                                    onChange={e => handleChange(e, i)}
-                                    onKeyDown={e => handleKeyDown(e, i)}
-                                    className="w-11 h-14 sm:w-14 sm:h-16 border border-gray-300 rounded-xl text-center text-2xl font-bold focus:border-agrivo-600 focus:ring-2 focus:ring-agrivo-500 outline-none transition-all bg-gray-50 focus:bg-white text-gray-900"
-                                />
-                            ))}
-                        </div>
-
-                        <Button onClick={handleVerify} disabled={isLoading || otp.join('').length < 6} className="w-full py-4 text-lg rounded-xl shadow-md mb-8">
-                            {isLoading ? <i className="fa-solid fa-circle-notch fa-spin"></i> : 'Verifikasi Akun Saya'}
-                        </Button>
-
-                        <div className="text-sm text-gray-500 border-t border-gray-100 pt-6">
-                            Belum menerima kode OTP? <br className="sm:hidden" />
-                            {timer > 0 ? (
-                                <span className="text-gray-400 mt-1 inline-block">Kirim ulang tersedia dalam <b>{timer}s</b></span>
-                            ) : (
-                                <button onClick={() => { setTimer(30); showToast('Kode OTP baru telah dikirimkan (Simulasi). Gunakan 123456 untuk testing.', 'info'); }} className="font-bold text-agrivo-600 hover:text-agrivo-700 hover:underline mt-1 inline-block transition-colors">Kirim Ulang Kode Sekarang</button>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const HomePage = ({ navigate, showToast }) => {
-            const categories = [
-                { icon: '🌾', name: 'Padi & Beras' },
-                { icon: '🌽', name: 'Jagung' },
-                { icon: '🌶', name: 'Cabai' },
-                { icon: '🥬', name: 'Sayuran' },
-                { icon: '🍊', name: 'Buah' },
-                { icon: '🌱', name: 'Benih' },
-                { icon: '🧪', name: 'Pupuk' },
-                { icon: '🚜', name: 'Alat Pertanian' }
-            ];
-
-            return (
-                <div className="fade-in pb-20">
-                    {/* Hero Section */}
-                    <div className="bg-agrivo-900 text-white relative overflow-hidden">
-                        <div className="absolute inset-0 opacity-20 bg-[url('https://images.unsplash.com/photo-1595841696677-6489ff3f8cd1?auto=format&fit=crop&q=80&w=2000')] bg-cover bg-center"></div>
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32 relative z-10 flex flex-col items-center text-center">
-                            <Badge type="success"><span className="text-agrivo-100">DARI PETANI, UNTUK INDONESIA</span></Badge>
-                            <h1 className="mt-6 text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight max-w-4xl">
-                                Temukan Produk dan Peluang Pertanian dalam <span className="text-agrivo-400">Satu Platform</span>.
-                            </h1>
-                            <p className="mt-6 text-lg md:text-xl text-gray-300 max-w-2xl">
-                                AGRIVO menghubungkan petani, pembeli, supplier, dan pelaku usaha untuk membangun ekosistem pertanian Indonesia yang lebih terhubung.
-                            </p>
-                            
-                            <div className="mt-10 w-full max-w-2xl bg-white p-2 rounded-2xl flex items-center shadow-xl">
-                                <i className="fa-solid fa-search text-gray-400 ml-4 mr-3 text-lg"></i>
-                                <input 
-                                    type="text" 
-                                    placeholder="Cari cabai, beras, pupuk, traktor..." 
-                                    className="flex-grow py-3 px-2 outline-none text-gray-800 text-lg rounded-xl"
-                                />
-                                <Button className="px-6 py-3 text-lg rounded-xl hidden sm:block" onClick={() => navigate('/marketplace')}>Cari Produk</Button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-12">
-                        {/* Categories */}
-                        <div className="mb-16">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-6">Temukan Kebutuhan Pertanian</h2>
-                            <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
-                                {categories.map(c => (
-                                    <div key={c.name} onClick={() => navigate('/marketplace')} className="bg-white border border-gray-100 p-4 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:shadow-md hover:border-agrivo-200 transition-all group">
-                                        <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">{c.icon}</div>
-                                        <span className="text-sm font-medium text-center text-gray-700">{c.name}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Featured Products */}
-                        <div className="mb-16">
-                            <div className="flex justify-between items-end mb-6">
-                                <div>
-                                    <h2 className="text-2xl font-bold text-gray-900">Produk Pilihan Hari Ini</h2>
-                                    <p className="text-gray-500 mt-1">Hasil panen terbaik langsung dari petani terverifikasi.</p>
-                                </div>
-                                <button onClick={() => navigate('/marketplace')} className="text-agrivo-600 font-semibold hover:text-agrivo-700 hidden sm:block">Lihat Semua <i className="fa-solid fa-arrow-right ml-1"></i></button>
-                            </div>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6">
-                                {MOCK_PRODUCTS.map(p => (
-                                    <ProductCard key={p.id} product={p} onClick={() => navigate(`/product/${p.id}`)} />
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Trust Section */}
-                        <div className="bg-agrivo-50 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between border border-agrivo-100">
-                            <div className="md:w-1/2 mb-8 md:mb-0">
-                                <h2 className="text-3xl font-bold text-gray-900 mb-4">Transaksi Aman & Terpercaya</h2>
-                                <p className="text-gray-600 text-lg mb-6 leading-relaxed">
-                                    Setiap penjual di AGRIVO melalui proses verifikasi ketat. Dana Anda aman bersama kami hingga pesanan selesai dan diterima dengan baik.
-                                </p>
-                                <ul className="space-y-3">
-                                    <li className="flex items-center text-gray-700"><i className="fa-solid fa-check-circle text-agrivo-500 mr-3 text-xl"></i> Penjual Terverifikasi (KYC)</li>
-                                    <li className="flex items-center text-gray-700"><i className="fa-solid fa-shield-halved text-agrivo-500 mr-3 text-xl"></i> Rekening Bersama Aman</li>
-                                    <li className="flex items-center text-gray-700"><i className="fa-solid fa-headset text-agrivo-500 mr-3 text-xl"></i> Resolusi Konflik 24/7</li>
-                                </ul>
-                            </div>
-                            <div className="md:w-5/12 grid grid-cols-2 gap-4">
-                                <div className="bg-white p-6 rounded-2xl shadow-sm text-center">
-                                    <h3 className="text-4xl font-bold text-agrivo-600 mb-2">10rb+</h3>
-                                    <p className="text-gray-500 font-medium">Petani Bergabung</p>
-                                </div>
-                                <div className="bg-white p-6 rounded-2xl shadow-sm text-center">
-                                    <h3 className="text-4xl font-bold text-agrivo-600 mb-2">50t+</h3>
-                                    <p className="text-gray-500 font-medium">Transaksi Komoditas</p>
-                                </div>
-                                <div className="bg-white p-6 rounded-2xl shadow-sm text-center col-span-2">
-                                    <h3 className="text-2xl font-bold text-gray-800 mb-2">⭐ 4.8 / 5.0</h3>
-                                    <p className="text-gray-500 font-medium">Kepuasan Pengguna</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const MarketplacePage = ({ navigate }) => {
-            const [products, setProducts] = useState([]);
-            const [search, setSearch] = useState('');
-
-            useEffect(() => {
-                api.getProducts(search).then(setProducts);
-            }, [search]);
-
-            return (
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 fade-in pb-20">
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold text-gray-900">Pasar Pertanian AGRIVO</h1>
-                        <p className="text-gray-500 mt-2">Temukan hasil pertanian langsung dari petani dan pelaku usaha.</p>
-                    </div>
-
-                    <div className="flex flex-col md:flex-row gap-8">
-                        {/* Sidebar Filter */}
-                        <div className="w-full md:w-64 flex-shrink-0">
-                            <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-200 sticky top-24">
-                                <h3 className="font-bold text-gray-800 mb-4 pb-4 border-b">Filter Pencarian</h3>
-                                
-                                <div className="mb-6">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
-                                    <div className="space-y-2">
-                                        {['Semua', 'Padi & Beras', 'Cabai', 'Sayuran', 'Pupuk'].map(cat => (
-                                            <label key={cat} className="flex items-center">
-                                                <input type="radio" name="cat" className="text-agrivo-600 focus:ring-agrivo-500 h-4 w-4" defaultChecked={cat==='Semua'} />
-                                                <span className="ml-2 text-sm text-gray-600">{cat}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className="mb-6">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Lokasi (Provinsi)</label>
-                                    <select className="w-full border-gray-300 rounded-lg shadow-sm focus:border-agrivo-500 focus:ring-agrivo-500 sm:text-sm p-2 border">
-                                        <option>Semua Lokasi</option>
-                                        <option>Jawa Timur</option>
-                                        <option>Jawa Tengah</option>
-                                        <option>Jawa Barat</option>
-                                    </select>
-                                </div>
-
-                                <Button className="w-full">Terapkan Filter</Button>
-                            </div>
-                        </div>
-
-                        {/* Product Grid */}
-                        <div className="flex-grow">
-                            <div className="bg-white p-2 rounded-xl shadow-sm border border-gray-200 mb-6 flex items-center">
-                                <i className="fa-solid fa-search text-gray-400 ml-3"></i>
-                                <input 
-                                    type="text" 
-                                    placeholder="Cari produk atau toko..." 
-                                    className="w-full py-2 px-3 outline-none"
-                                    value={search}
-                                    onChange={(e) => setSearch(e.target.value)}
-                                />
-                            </div>
-
-                            {products.length === 0 ? (
-                                <div className="text-center py-20 bg-white rounded-2xl border border-gray-200">
-                                    <i className="fa-solid fa-box-open text-6xl text-gray-300 mb-4"></i>
-                                    <h3 className="text-xl font-medium text-gray-900">Belum ada produk yang sesuai.</h3>
-                                    <p className="text-gray-500 mt-2">Coba gunakan kata kunci atau filter lain.</p>
-                                    <Button className="mt-6" onClick={() => setSearch('')}>Reset Filter</Button>
-                                </div>
-                            ) : (
-                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-                                    {products.map(p => (
-                                        <ProductCard key={p.id} product={p} onClick={() => navigate(`/product/${p.id}`)} />
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const ProductDetailPage = ({ id, navigate, currentUser, showToast }) => {
-            const [product, setProduct] = useState(null);
-            const [qty, setQty] = useState(0);
-
-            useEffect(() => {
-                api.getProductById(id).then(data => {
-                    setProduct(data);
-                    if(data) setQty(data.minOrder);
-                });
-            }, [id]);
-
-            if (!product) return <div className="p-20 text-center">Loading...</div>;
-
-            const handleBuy = () => {
-                if(!currentUser) return showToast('Silakan login sebagai Buyer terlebih dahulu.', 'error');
-                if(currentUser.role !== 'BUYER') return showToast('Hanya akun Buyer yang dapat membuat pesanan.', 'error');
-                navigate(`/checkout/${product.id}?qty=${qty}`);
-            };
-
-            return (
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 fade-in pb-24 lg:pb-8">
-                    <div className="text-sm text-gray-500 mb-6">
-                        <span className="cursor-pointer hover:text-agrivo-600" onClick={() => navigate('/')}>Home</span> &gt; 
-                        <span className="cursor-pointer hover:text-agrivo-600 ml-1" onClick={() => navigate('/marketplace')}>Marketplace</span> &gt; 
-                        <span className="text-gray-800 font-medium ml-1">{product.name}</span>
-                    </div>
-
-                    <div className="bg-white rounded-3xl shadow-sm border border-gray-200 overflow-hidden flex flex-col lg:flex-row">
-                        {/* Image Gallery */}
-                        <div className="w-full lg:w-1/2 p-6 lg:border-r border-gray-200">
-                            <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-gray-100">
-                                <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                            </div>
-                        </div>
-
-                        {/* Product Info */}
-                        <div className="w-full lg:w-1/2 p-6 lg:p-10 flex flex-col">
-                            <div className="flex justify-between items-start mb-4">
-                                <div>
-                                    <Badge type="info">{product.category}</Badge>
-                                    <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mt-3">{product.name}</h1>
-                                </div>
-                                <div className="flex items-center bg-yellow-50 px-3 py-1 rounded-lg border border-yellow-100">
-                                    <i className="fa-solid fa-star text-yellow-400 mr-2 text-sm"></i>
-                                    <span className="font-bold text-gray-800">{product.rating}</span>
-                                </div>
-                            </div>
-                            
-                            <div className="text-3xl font-bold text-agrivo-600 mb-6 pb-6 border-b border-gray-100">
-                                {formatCurrency(product.price)} <span className="text-lg font-normal text-gray-500">/{product.unit}</span>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-y-4 gap-x-8 mb-8 text-sm">
-                                <div>
-                                    <p className="text-gray-500 mb-1">Stok Tersedia</p>
-                                    <p className="font-medium text-gray-900">{product.stock} {product.unit}</p>
-                                </div>
-                                <div>
-                                    <p className="text-gray-500 mb-1">Minimum Order</p>
-                                    <p className="font-medium text-gray-900">{product.minOrder} {product.unit}</p>
-                                </div>
-                                <div>
-                                    <p className="text-gray-500 mb-1">Lokasi Pengiriman</p>
-                                    <p className="font-medium text-gray-900 flex items-center">
-                                        <i className="fa-solid fa-location-dot text-agrivo-500 mr-2"></i>
-                                        {product.location}
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-gray-500 mb-1">Estimasi Panen/Kondisi</p>
-                                    <p className="font-medium text-gray-900">Siap Kirim (Segar)</p>
-                                </div>
-                            </div>
-
-                            <div className="mb-8">
-                                <h3 className="font-semibold text-gray-900 mb-2">Deskripsi Produk</h3>
-                                <p className="text-gray-600 leading-relaxed text-sm">
-                                    {product.description}
-                                </p>
-                            </div>
-
-                            {/* Seller Info */}
-                            <div className="flex items-center p-4 bg-gray-50 rounded-2xl mb-8 border border-gray-100">
-                                <div className="w-12 h-12 bg-agrivo-100 rounded-full flex items-center justify-center text-agrivo-700 font-bold text-xl mr-4">
-                                    {product.sellerName.charAt(0)}
-                                </div>
-                                <div className="flex-grow">
-                                    <h4 className="font-bold text-gray-900 flex items-center">
-                                        {product.sellerName}
-                                        <i className="fa-solid fa-circle-check text-blue-500 ml-2 text-sm" title="Terverifikasi"></i>
-                                    </h4>
-                                    <p className="text-xs text-gray-500">Aktif 2 jam lalu • 120 Transaksi</p>
-                                </div>
-                                <Button variant="outline" className="text-sm px-3 py-1.5" onClick={() => navigate('/chat')}>
-                                    <i className="fa-regular fa-comment-dots mr-2"></i> Chat
-                                </Button>
-                            </div>
-
-                            {/* Action CTA (Desktop inside normal flow, Mobile sticky bottom) */}
-                            <div className="mt-auto pt-4 border-t border-gray-100 hidden lg:flex items-center gap-4">
-                                <div className="flex items-center border border-gray-300 rounded-lg">
-                                    <button onClick={() => setQty(Math.max(product.minOrder, qty - 1))} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-l-lg">-</button>
-                                    <input type="number" value={qty} readOnly className="w-16 text-center outline-none font-medium" />
-                                    <button onClick={() => setQty(Math.min(product.stock, qty + 1))} className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-r-lg">+</button>
-                                </div>
-                                <Button className="flex-grow py-3 text-lg" onClick={handleBuy}>Beli Sekarang</Button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Mobile Sticky CTA */}
-                    <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)] lg:hidden flex gap-3 z-40 pb-[env(safe-area-inset-bottom)]">
-                        <Button variant="outline" className="w-1/3 flex flex-col items-center justify-center py-2" onClick={() => navigate('/chat')}>
-                            <i className="fa-regular fa-comment-dots text-lg mb-1"></i>
-                            <span className="text-[10px]">Chat</span>
-                        </Button>
-                        <Button className="w-2/3 py-3" onClick={handleBuy}>Beli Sekarang</Button>
-                    </div>
-                </div>
-            );
-        };
-
-        const CheckoutPage = ({ id, qty, navigate, currentUser, showToast }) => {
-            const [product, setProduct] = useState(null);
-            
-            useEffect(() => {
-                api.getProductById(id).then(setProduct);
-            }, [id]);
-
-            if (!product) return <div>Loading...</div>;
-
-            const fee = 10000; // Mock service fee
-            const subtotal = product.price * qty;
-            const total = subtotal + fee;
-
-            const handleConfirm = async () => {
-                const orderData = {
-                    buyerId: currentUser.id,
-                    sellerId: product.sellerId,
-                    productId: product.id,
-                    productName: product.name,
-                    qty: Number(qty),
-                    price: product.price,
-                    subtotal, fee, total
-                };
-                await api.createOrder(orderData);
-                showToast('Pesanan berhasil dibuat!', 'success');
-                navigate('/buyer/orders');
-            };
-
-            return (
-                <div className="max-w-3xl mx-auto px-4 py-8 fade-in pb-20">
-                    <h1 className="text-2xl font-bold mb-6">Konfirmasi Pesanan</h1>
-                    
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mb-6">
-                        <h3 className="font-semibold text-gray-800 mb-4 border-b pb-2">Detail Produk</h3>
-                        <div className="flex gap-4 mb-4">
-                            <img src={product.image} className="w-20 h-20 rounded-lg object-cover" />
-                            <div>
-                                <h4 className="font-medium">{product.name}</h4>
-                                <p className="text-sm text-gray-500">{product.sellerName}</p>
-                                <p className="font-bold text-agrivo-600 mt-1">{formatCurrency(product.price)} / {product.unit}</p>
-                            </div>
-                        </div>
-                        <div className="flex justify-between items-center text-sm">
-                            <span className="text-gray-600">Kuantitas Pembelian:</span>
-                            <span className="font-medium">{qty} {product.unit}</span>
-                        </div>
-                    </div>
-
-                    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 mb-6">
-                        <h3 className="font-semibold text-gray-800 mb-4 border-b pb-2">Ringkasan Pembayaran</h3>
-                        <div className="space-y-3 text-sm">
-                            <div className="flex justify-between">
-                                <span className="text-gray-600">Subtotal Produk</span>
-                                <span>{formatCurrency(subtotal)}</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-600">Biaya Layanan (Escrow)</span>
-                                <span>{formatCurrency(fee)}</span>
-                            </div>
-                            <div className="flex justify-between font-bold text-lg border-t pt-3 mt-3">
-                                <span>Total Pembayaran</span>
-                                <span className="text-agrivo-600">{formatCurrency(total)}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="bg-blue-50 p-4 rounded-xl text-blue-800 text-sm mb-6 flex items-start">
-                        <i className="fa-solid fa-circle-info mt-1 mr-3"></i>
-                        <p>Pembayaran akan ditahan oleh sistem AGRIVO (Rekening Bersama) dan baru diteruskan ke penjual setelah Anda mengonfirmasi penerimaan barang.</p>
-                    </div>
-
-                    <Button className="w-full py-4 text-lg rounded-xl" onClick={handleConfirm}>Buat Pesanan & Bayar</Button>
-                </div>
-            );
-        };
-
-        const ChatPage = () => {
-            const [msgs, setMsgs] = useState([
-                { sender: 'seller', text: 'Halo Pak Ahmad, pesanan cabai 50kg siap dikirim besok pagi ya.', time: '09:00' },
-                { sender: 'buyer', text: 'Baik Pak Budi, pastikan yang merah segar semua ya.', time: '09:05' },
-            ]);
-            const [input, setInput] = useState('');
-
-            const send = (e) => {
-                e.preventDefault();
-                if(!input.trim()) return;
-                setMsgs([...msgs, { sender: 'buyer', text: input, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }]);
-                setInput('');
-            };
-
-            return (
-                <div className="max-w-4xl mx-auto px-4 py-6 fade-in h-[calc(100vh-140px)] flex flex-col pb-20 lg:pb-6">
-                    <div className="bg-white rounded-t-2xl shadow-sm border-b border-gray-200 p-4 flex items-center">
-                        <div className="w-10 h-10 bg-agrivo-100 rounded-full flex items-center justify-center text-agrivo-700 font-bold mr-3">PB</div>
-                        <div>
-                            <h3 className="font-bold text-gray-900">Pak Budi Farm</h3>
-                            <p className="text-xs text-green-500 flex items-center"><span className="w-2 h-2 bg-green-500 rounded-full mr-1"></span> Online</p>
-                        </div>
-                    </div>
-                    
-                    <div className="flex-grow bg-gray-50 border-x border-gray-200 p-4 overflow-y-auto flex flex-col space-y-4">
-                        <div className="text-center"><span className="bg-gray-200 text-gray-600 text-xs px-2 py-1 rounded-full">Hari Ini</span></div>
-                        
-                        {/* Mock Product Share */}
-                        <div className="self-end w-3/4 max-w-sm bg-white rounded-2xl rounded-tr-sm p-3 shadow-sm border border-gray-100">
-                            <div className="flex gap-3 bg-gray-50 p-2 rounded-xl mb-2">
-                                <img src={MOCK_PRODUCTS[0].image} className="w-12 h-12 rounded object-cover" />
-                                <div>
-                                    <p className="text-xs font-semibold">{MOCK_PRODUCTS[0].name}</p>
-                                    <p className="text-xs text-agrivo-600 font-bold">{formatCurrency(MOCK_PRODUCTS[0].price)}</p>
-                                </div>
-                            </div>
-                            <p className="text-sm text-gray-800">Pak, ready 500kg?</p>
-                            <span className="text-[10px] text-gray-400 block text-right mt-1">08:55 <i className="fa-solid fa-check-double text-blue-500 ml-1"></i></span>
-                        </div>
-
-                        {msgs.map((m, i) => (
-                            <div key={i} className={`self-[${m.sender === 'buyer' ? 'end' : 'start'}] max-w-[80%] ${m.sender === 'buyer' ? 'bg-agrivo-100 rounded-tr-sm' : 'bg-white rounded-tl-sm'} rounded-2xl p-3 shadow-sm border border-gray-100`}>
-                                <p className="text-sm text-gray-800">{m.text}</p>
-                                <span className="text-[10px] text-gray-400 block text-right mt-1">{m.time} {m.sender === 'buyer' && <i className="fa-solid fa-check-double text-blue-500 ml-1"></i>}</span>
-                            </div>
-                        ))}
-                    </div>
-
-                    <form onSubmit={send} className="bg-white rounded-b-2xl shadow-sm border-t border-gray-200 p-3 flex gap-2">
-                        <button type="button" className="text-gray-400 hover:text-agrivo-600 px-2"><i className="fa-solid fa-paperclip"></i></button>
-                        <input type="text" value={input} onChange={e=>setInput(e.target.value)} placeholder="Tulis pesan..." className="flex-grow bg-gray-100 rounded-full px-4 py-2 text-sm outline-none focus:ring-1 focus:ring-agrivo-500" />
-                        <button type="submit" className="bg-agrivo-600 text-white w-10 h-10 rounded-full flex items-center justify-center hover:bg-agrivo-700 transition"><i className="fa-solid fa-paper-plane text-sm"></i></button>
-                    </form>
-                </div>
-            );
-        };
-
-        const BuyerDashboard = ({ currentUser, showToast }) => {
-            const [orders, setOrders] = useState([]);
-            useEffect(() => {
-                api.getOrdersByUser(currentUser.id, 'BUYER').then(setOrders);
-            }, [currentUser]);
-
-            return (
-                <div className="max-w-7xl mx-auto px-4 py-8 fade-in pb-20">
-                    <h1 className="text-3xl font-bold mb-8">Dashboard Pembeli</h1>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center">
-                            <div className="w-14 h-14 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center text-2xl mr-4"><i className="fa-solid fa-box"></i></div>
-                            <div>
-                                <p className="text-gray-500 text-sm">Pesanan Aktif</p>
-                                <p className="text-2xl font-bold">{orders.filter(o => o.status !== 'COMPLETED').length}</p>
-                            </div>
-                        </div>
-                        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center">
-                            <div className="w-14 h-14 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-2xl mr-4"><i className="fa-solid fa-check-circle"></i></div>
-                            <div>
-                                <p className="text-gray-500 text-sm">Pesanan Selesai</p>
-                                <p className="text-2xl font-bold">{orders.filter(o => o.status === 'COMPLETED').length}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div className="p-5 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
-                            <h3 className="font-bold text-gray-800">Riwayat Pesanan</h3>
-                        </div>
-                        <div className="divide-y divide-gray-100">
-                            {orders.length === 0 ? <p className="p-8 text-center text-gray-500">Belum ada pesanan.</p> : 
-                            orders.map(order => (
-                                <div key={order.id} className="p-5 flex flex-col md:flex-row justify-between md:items-center hover:bg-gray-50 transition">
-                                    <div className="mb-4 md:mb-0">
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <span className="text-xs font-semibold text-gray-500">{order.id}</span>
-                                            <span className="text-xs text-gray-400">{order.date}</span>
-                                            <Badge type={order.status === 'COMPLETED' ? 'success' : order.status === 'PENDING' ? 'warning' : 'info'}>{order.status}</Badge>
-                                        </div>
-                                        <h4 className="font-bold text-gray-900">{order.productName}</h4>
-                                        <p className="text-sm text-gray-500">{order.qty} Unit x {formatCurrency(order.price)}</p>
-                                    </div>
-                                    <div className="text-left md:text-right flex flex-col justify-between">
-                                        <div>
-                                            <p className="text-xs text-gray-500 mb-1">Total Belanja</p>
-                                            <p className="font-bold text-agrivo-600 text-lg">{formatCurrency(order.total)}</p>
-                                        </div>
-                                        {order.status === 'DELIVERED' && (
-                                            <Button size="sm" className="mt-2 text-xs py-1" onClick={() => showToast('Fitur Review segera hadir!', 'info')}>Selesaikan & Ulas</Button>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            );
-        };
-
-        const AddProductModal = ({ isOpen, onClose, onSave }) => {
-            const [formData, setFormData] = useState({ name: '', category: 'Padi & Beras', price: '', unit: 'kg', stock: '', description: '' });
-            const [isGenerating, setIsGenerating] = useState(false);
-
-            if (!isOpen) return null;
-
-            const generateAI = async () => {
-                if (!formData.name) return alert('Silakan isi Nama Produk terlebih dahulu agar AI dapat membantu!');
-                setIsGenerating(true);
-                const prompt = `Buat deskripsi produk pertanian yang profesional dan menarik untuk dijual di marketplace AGRIVO. 
-                Nama Produk: ${formData.name}
-                Kategori: ${formData.category}
-                Buat dalam 2-3 paragraf singkat yang menyoroti kualitas, kesegaran, dan meyakinkan pembeli B2B atau konsumen. Gunakan format yang rapi dan bahasa Indonesia yang baik.`;
-                
-                const response = await geminiApi.generateContent([{ parts: [{ text: prompt }] }]);
-                setFormData({ ...formData, description: response });
-                setIsGenerating(false);
-            };
-
+<!-- ... existing code ... -->
             return (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex justify-center items-center p-4 fade-in">
-                    <div className="bg-white rounded-3xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-bold text-gray-900">Tambah Produk Baru</h2>
-                            <button onClick={onClose} className="text-gray-400 hover:text-red-500 bg-gray-100 hover:bg-red-50 w-8 h-8 rounded-full flex items-center justify-center transition-colors"><i className="fa-solid fa-xmark"></i></button>
-                        </div>
-                        <div className="space-y-5">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Nama Produk</label>
-                                <input type="text" className="w-full border border-gray-300 rounded-xl p-3 outline-none focus:ring-2 focus:ring-agrivo-500 focus:border-transparent transition-all" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="Contoh: Cabai Merah Besar Premium" />
-                            </div>
-                            <div className="flex gap-4">
-                                <div className="flex-1">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
-                                    <select className="w-full border border-gray-300 rounded-xl p-3 outline-none focus:ring-2 focus:ring-agrivo-500 focus:border-transparent" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})}>
-                                        <option>Padi & Beras</option><option>Cabai</option><option>Sayuran</option><option>Buah</option><option>Pupuk</option>
-                                    </select>
-                                </div>
-                                <div className="flex-1">
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Harga / Unit</label>
-                                    <div className="flex">
-                                        <input type="number" className="w-full border border-gray-300 rounded-l-xl p-3 outline-none focus:ring-2 focus:ring-agrivo-500 focus:border-transparent border-r-0" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} placeholder="0" />
-                                        <select className="border border-gray-300 rounded-r-xl bg-gray-50 p-3 outline-none focus:ring-2 focus:ring-agrivo-500" value={formData.unit} onChange={e => setFormData({...formData, unit: e.target.value})}>
-                                            <option>kg</option><option>ton</option><option>sak</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <div className="flex justify-between items-end mb-2">
-                                    <label className="block text-sm font-medium text-gray-700">Deskripsi Produk</label>
-                                    <button onClick={generateAI} disabled={isGenerating} className="text-xs bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-medium px-3 py-1.5 rounded-lg hover:shadow-md hover:scale-105 active:scale-95 disabled:opacity-70 disabled:hover:scale-100 flex items-center transition-all">
-                                        {isGenerating ? <i className="fa-solid fa-spinner fa-spin mr-1.5"></i> : <i className="fa-solid fa-wand-magic-sparkles mr-1.5"></i>}
-                                        {isGenerating ? 'AI Generating...' : 'Tulis Otomatis dengan AI'}
-                                    </button>
-                                </div>
-                                <textarea rows="5" className="w-full border border-gray-300 rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-agrivo-500 focus:border-transparent transition-all" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="Deskripsikan produk Anda secara mendetail..."></textarea>
-                            </div>
-                            <Button className="w-full py-3 text-lg rounded-xl mt-2" onClick={() => onSave(formData)}>Simpan & Upload Produk</Button>
+<!-- ... existing code ... -->
                         </div>
                     </div>
                 </div>
             );
         };
 
-        const SellerDashboard = ({ currentUser, showToast }) => {
+        const FarmerDashboard = ({ currentUser, showToast }) => {
             const [orders, setOrders] = useState([]);
             const [showAddModal, setShowAddModal] = useState(false);
 
             useEffect(() => {
-                api.getOrdersByUser(currentUser.id, 'SELLER').then(setOrders);
+                api.getOrdersByUser(currentUser.id, 'FARMER').then(setOrders);
             }, [currentUser]);
 
             const updateStatus = async (id, status) => {
                 await api.updateOrderStatus(id, status);
-                api.getOrdersByUser(currentUser.id, 'SELLER').then(setOrders);
+                api.getOrdersByUser(currentUser.id, 'FARMER').then(setOrders);
             };
 
             const totalSales = orders.filter(o => o.status === 'COMPLETED').reduce((acc, curr) => acc + curr.subtotal, 0);
@@ -1340,242 +255,10 @@
             return (
                 <div className="max-w-7xl mx-auto px-4 py-8 fade-in pb-20">
                     <div className="flex justify-between items-center mb-8">
-                        <h1 className="text-3xl font-bold">Seller Dashboard</h1>
+                        <h1 className="text-3xl font-bold">Dashboard Petani & Penjual</h1>
                         <Button onClick={() => setShowAddModal(true)}><i className="fa-solid fa-plus mr-2"></i> Tambah Produk</Button>
                     </div>
-                    
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                            <p className="text-gray-500 text-sm mb-1">Penjualan (Selesai)</p>
-                            <p className="text-xl md:text-2xl font-bold text-agrivo-600">{formatCurrency(totalSales)}</p>
-                        </div>
-                        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                            <p className="text-gray-500 text-sm mb-1">Pesanan Baru</p>
-                            <p className="text-2xl font-bold">{orders.filter(o => o.status === 'PENDING').length}</p>
-                        </div>
-                        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                            <p className="text-gray-500 text-sm mb-1">Produk Aktif</p>
-                            <p className="text-2xl font-bold">{MOCK_PRODUCTS.filter(p => p.sellerId === currentUser.id).length}</p>
-                        </div>
-                        <div className="bg-white p-5 rounded-2xl shadow-sm border border-gray-100">
-                            <p className="text-gray-500 text-sm mb-1">Rating Toko</p>
-                            <p className="text-2xl font-bold flex items-center">4.9 <i className="fa-solid fa-star text-yellow-400 text-sm ml-2"></i></p>
-                        </div>
-                    </div>
-
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div className="p-5 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
-                            <h3 className="font-bold text-gray-800">Manajemen Pesanan</h3>
-                        </div>
-                        <div className="overflow-x-auto">
-                            <table className="w-full text-left border-collapse">
-                                <thead>
-                                    <tr className="bg-white text-gray-500 text-sm border-b">
-                                        <th className="p-4 font-medium">Order ID / Tanggal</th>
-                                        <th className="p-4 font-medium">Produk</th>
-                                        <th className="p-4 font-medium">Total Nominal</th>
-                                        <th className="p-4 font-medium">Status</th>
-                                        <th className="p-4 font-medium text-right">Aksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {orders.map(o => (
-                                        <tr key={o.id} className="border-b hover:bg-gray-50">
-                                            <td className="p-4">
-                                                <p className="font-semibold text-sm">{o.id}</p>
-                                                <p className="text-xs text-gray-500">{o.date}</p>
-                                            </td>
-                                            <td className="p-4">
-                                                <p className="font-medium text-sm">{o.productName}</p>
-                                                <p className="text-xs text-gray-500">{o.qty} Qty</p>
-                                            </td>
-                                            <td className="p-4 font-medium">{formatCurrency(o.subtotal)}</td>
-                                            <td className="p-4">
-                                                <Badge type={o.status === 'COMPLETED' ? 'success' : o.status === 'PENDING' ? 'warning' : 'info'}>{o.status}</Badge>
-                                            </td>
-                                            <td className="p-4 text-right">
-                                                {o.status === 'PENDING' && (
-                                                    <div className="flex justify-end gap-2">
-                                                        <Button variant="outline" className="text-xs py-1 px-2" onClick={() => updateStatus(o.id, 'CANCELLED')}>Tolak</Button>
-                                                        <Button className="text-xs py-1 px-2" onClick={() => updateStatus(o.id, 'PROCESSING')}>Proses</Button>
-                                                    </div>
-                                                )}
-                                                {o.status === 'PROCESSING' && (
-                                                    <Button className="text-xs py-1 px-2" onClick={() => updateStatus(o.id, 'SHIPPED')}>Kirim</Button>
-                                                )}
-                                                {o.status === 'SHIPPED' && (
-                                                    <span className="text-xs text-gray-500">Menunggu Pembeli</span>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <AddProductModal 
-                        isOpen={showAddModal} 
-                        onClose={() => setShowAddModal(false)}
-                        onSave={(data) => {
-                            if(!data.name) return showToast('Nama produk wajib diisi.', 'error');
-                            showToast(`Produk "${data.name}" berhasil ditambahkan ke toko Anda! (Mode Simulasi)`, 'success');
-                            setShowAddModal(false);
-                        }} 
-                    />
-                </div>
-            );
-        };
-
-        const AdminDashboard = () => (
-            <div className="max-w-7xl mx-auto px-4 py-8 fade-in">
-                <h1 className="text-3xl font-bold mb-8 text-gray-800">Admin Control Panel</h1>
-                <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded-xl mb-6">
-                    <h3 className="font-bold flex items-center"><i className="fa-solid fa-lock mr-2"></i> Akses Terbatas</h3>
-                    <p className="text-sm mt-1">Ini adalah simulasi dashboard Admin AGRIVO. Anda memiliki hak akses penuh untuk verifikasi entitas dan memantau GMV.</p>
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    {[{label: 'Total Users', val: '1,240', ic: 'users'}, {label: 'Active Sellers', val: '142', ic: 'shop'}, {label: 'Monthly GMV', val: 'Rp 4.2M', ic: 'chart-line'}, {label: 'AGRIVO Revenue', val: 'Rp 126K', ic: 'wallet'}].map(s => (
-                        <div key={s.label} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-                            <div className="flex justify-between items-start mb-4">
-                                <div className="p-3 bg-gray-50 rounded-lg text-gray-500"><i className={`fa-solid fa-${s.ic}`}></i></div>
-                                <span className="text-xs font-bold text-green-500">+12%</span>
-                            </div>
-                            <p className="text-gray-500 text-sm">{s.label}</p>
-                            <h3 className="text-2xl font-bold">{s.val}</h3>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div className="p-5 border-b border-gray-200 bg-gray-50">
-                        <h3 className="font-bold text-gray-800">Pending Approvals (Verifikasi Bisnis)</h3>
-                    </div>
-                    <div className="p-8 text-center text-gray-500">
-                        Tidak ada pengajuan bisnis baru.
-                    </div>
-                </div>
-            </div>
-        );
-
-        // ==========================================
-        // 3.5. AGRIBOT (AI ASSISTANT)
-        // ==========================================
-        const AgriBot = () => {
-            const [isOpen, setIsOpen] = useState(false);
-            const [messages, setMessages] = useState([
-                { role: 'model', text: 'Halo! Saya AgriBot 🤖, asisten pintar AGRIVO. Ada yang bisa saya bantu terkait produk pertanian, tips bertani, atau cara transaksi di platform ini?' }
-            ]);
-            const [input, setInput] = useState('');
-            const [isTyping, setIsTyping] = useState(false);
-            const chatEndRef = React.useRef(null);
-
-            const scrollToBottom = () => chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-            useEffect(() => { scrollToBottom(); }, [messages, isOpen]);
-
-            const handleSend = async (e) => {
-                e.preventDefault();
-                if (!input.trim() || isTyping) return;
-
-                const userMsg = input.trim();
-                setInput('');
-                
-                const newHistory = [...messages, { role: 'user', text: userMsg }];
-                setMessages(newHistory);
-                setIsTyping(true);
-
-                const sysInstruction = "Anda adalah AgriBot, asisten virtual dan AI resmi dari platform marketplace AGRIVO (Dari Petani Untuk Indonesia). Anda ramah, sangat cerdas, dan ahli dalam bidang pertanian Indonesia. Tugas Anda adalah membantu user mencari barang di AGRIVO, memberikan tips pertanian, info cuaca/musim tanam, dan panduan platform. Jawab dengan paragraf yang singkat, padat, dan format yang rapi. Gunakan emoji agar lebih interaktif.";
-                
-                const apiContents = newHistory.map(msg => ({
-                    role: msg.role,
-                    parts: [{ text: msg.text }]
-                }));
-
-                const response = await geminiApi.generateContent(apiContents, sysInstruction);
-                
-                setMessages(prev => [...prev, { role: 'model', text: response }]);
-                setIsTyping(false);
-            };
-
-            return (
-                <>
-                    {/* Floating FAB */}
-                    <button 
-                        onClick={() => setIsOpen(!isOpen)}
-                        className="fixed bottom-24 right-4 md:bottom-6 md:right-6 w-14 h-14 bg-agrivo-600 text-white rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.3)] flex items-center justify-center hover:bg-agrivo-700 hover:scale-110 active:scale-95 transition-all z-[100]"
-                        title="Tanya AgriBot AI"
-                    >
-                        <i className={`fa-solid ${isOpen ? 'fa-chevron-down' : 'fa-robot'} text-2xl`}></i>
-                    </button>
-
-                    {/* Chat Window */}
-                    {isOpen && (
-                        <div className="fixed bottom-40 right-4 md:bottom-24 md:right-6 w-80 sm:w-[380px] bg-white rounded-3xl shadow-[0_10px_50px_rgba(0,0,0,0.2)] border border-gray-100 z-[100] flex flex-col overflow-hidden fade-in origin-bottom-right transition-transform" style={{ height: '550px', maxHeight: '75vh' }}>
-                            <div className="bg-gradient-to-r from-agrivo-700 to-agrivo-500 p-5 text-white flex items-center gap-4">
-                                <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-2xl shadow-inner border border-white/30">🤖</div>
-                                <div>
-                                    <h3 className="font-bold text-lg leading-tight">AgriBot AI</h3>
-                                    <p className="text-xs text-agrivo-50 flex items-center mt-0.5"><span className="w-2 h-2 bg-green-400 rounded-full mr-1.5 animate-pulse"></span> Sedang Aktif</p>
-                                </div>
-                                <button onClick={() => setIsOpen(false)} className="ml-auto text-white/70 hover:text-white"><i className="fa-solid fa-xmark text-xl"></i></button>
-                            </div>
-                            
-                            <div className="flex-1 p-5 overflow-y-auto bg-[#F8FAFC] flex flex-col gap-4">
-                                <div className="text-center mb-2"><span className="bg-gray-200/60 text-gray-500 text-[10px] font-bold uppercase tracking-wider px-3 py-1 rounded-full">Hari Ini</span></div>
-                                {messages.map((msg, i) => (
-                                    <div key={i} className={`max-w-[85%] p-3.5 rounded-2xl text-[14px] leading-relaxed shadow-sm ${msg.role === 'user' ? 'bg-agrivo-100 text-agrivo-900 self-end rounded-tr-sm' : 'bg-white text-gray-700 self-start rounded-tl-sm border border-gray-100'}`}>
-                                        <div dangerouslySetInnerHTML={{__html: msg.text.replace(/\n/g, '<br/>')}}></div>
-                                    </div>
-                                ))}
-                                {isTyping && (
-                                    <div className="bg-white text-gray-500 self-start px-4 py-3.5 rounded-2xl rounded-tl-sm border border-gray-100 shadow-sm text-sm flex items-center gap-1.5">
-                                        <span className="w-2 h-2 bg-agrivo-400 rounded-full animate-bounce"></span>
-                                        <span className="w-2 h-2 bg-agrivo-400 rounded-full animate-bounce" style={{animationDelay: '0.15s'}}></span>
-                                        <span className="w-2 h-2 bg-agrivo-400 rounded-full animate-bounce" style={{animationDelay: '0.3s'}}></span>
-                                    </div>
-                                )}
-                                <div ref={chatEndRef} />
-                            </div>
-
-                            <form onSubmit={handleSend} className="p-3 bg-white border-t border-gray-100 flex gap-2">
-                                <input 
-                                    type="text" 
-                                    value={input}
-                                    onChange={e => setInput(e.target.value)}
-                                    placeholder="Tanya seputar pertanian..." 
-                                    className="flex-1 bg-gray-50 border border-gray-200 rounded-full px-5 py-3 text-sm outline-none focus:ring-2 focus:ring-agrivo-500/50 focus:bg-white transition-all"
-                                />
-                                <button type="submit" disabled={!input.trim() || isTyping} className="w-12 h-12 bg-agrivo-600 text-white rounded-full flex items-center justify-center hover:bg-agrivo-700 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none transition-all flex-shrink-0">
-                                    <i className="fa-solid fa-paper-plane text-sm ml-0.5"></i>
-                                </button>
-                            </form>
-                        </div>
-                    )}
-                </>
-            );
-        };
-
-        // ==========================================
-        // 4. MAIN LAYOUT & ROUTING (App Component)
-        // ==========================================
-
-        const Toast = ({ message, type, onClose }) => {
-            if (!message) return null;
-            const bg = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-gray-800';
-            return (
-                <div className={`fixed top-4 md:top-6 left-1/2 transform -translate-x-1/2 z-[9999] px-5 py-3 rounded-xl shadow-2xl text-white font-medium flex items-center text-sm fade-in ${bg} min-w-[300px] max-w-[90vw] justify-between`}>
-                    <div className="flex items-center">
-                        {type === 'success' && <i className="fa-solid fa-circle-check mr-3 text-lg"></i>}
-                        {type === 'error' && <i className="fa-solid fa-triangle-exclamation mr-3 text-lg"></i>}
-                        {type === 'info' && <i className="fa-solid fa-circle-info mr-3 text-lg"></i>}
-                        <span className="leading-tight">{message}</span>
-                    </div>
-                    <button onClick={onClose} className="ml-4 opacity-70 hover:opacity-100 transition-opacity p-1"><i className="fa-solid fa-xmark"></i></button>
-                </div>
-            );
-        };
-
+<!-- ... existing code ... -->
         const App = () => {
             const [route, setRoute] = useState('/');
             const [currentUser, setCurrentUser] = useState(null); // default not logged in
@@ -1594,8 +277,38 @@
                 setMobileMenuOpen(false);
             };
 
+            const handleLoginSuccess = (user) => {
+                setCurrentUser(user);
+                const dashRoute = user.role === 'BUYER' ? '/buyer/orders' : user.role === 'FARMER' ? '/farmer/dashboard' : '/admin';
+                navigate(dashRoute);
+            };
+
+            const handleLogout = () => {
+                setCurrentUser(null);
+                showToast('Berhasil keluar dari akun.', 'success');
+                navigate('/login');
+            };
+
+            // Authentication & Role-based Route Protection
+            useEffect(() => {
+                const protectedRoutes = ['/buyer/orders', '/farmer/dashboard', '/admin'];
+                const authRoutes = ['/login', '/register', '/verify'];
+                
+                const isProtected = protectedRoutes.some(path => route.startsWith(path));
+                const isAuthRoute = authRoutes.some(path => route.startsWith(path));
+
+                if (isProtected && !currentUser) {
+                    showToast('Silakan masuk terlebih dahulu untuk mengakses halaman ini.', 'error');
+                    navigate('/login');
+                } else if (isAuthRoute && currentUser) {
+                    const dashRoute = currentUser.role === 'BUYER' ? '/buyer/orders' : currentUser.role === 'FARMER' ? '/farmer/dashboard' : '/admin';
+                    navigate(dashRoute);
+                }
+            }, [route, currentUser]);
+
             const renderPage = () => {
                 if (route === '/') return <HomePage navigate={navigate} showToast={showToast} />;
+                if (route === '/login') return <LoginPage navigate={navigate} showToast={showToast} onLoginSuccess={handleLoginSuccess} />;
                 if (route === '/register') return <RegisterPage navigate={navigate} showToast={showToast} />;
                 if (route.startsWith('/verify')) return <VerifyOTPPage route={route} navigate={navigate} showToast={showToast} />;
                 if (route === '/marketplace') return <MarketplacePage navigate={navigate} />;
@@ -1608,46 +321,17 @@
                 
                 // Protected Routes
                 if (route === '/buyer/orders' && currentUser?.role === 'BUYER') return <BuyerDashboard currentUser={currentUser} showToast={showToast} />;
-                if (route === '/seller/dashboard' && currentUser?.role === 'SELLER') return <SellerDashboard currentUser={currentUser} showToast={showToast} />;
+                if (route === '/farmer/dashboard' && currentUser?.role === 'FARMER') return <FarmerDashboard currentUser={currentUser} showToast={showToast} />;
                 if (route === '/admin' && currentUser?.role === 'ADMIN') return <AdminDashboard />;
                 
                 return <div className="p-20 text-center"><h1 className="text-2xl font-bold">404 - Halaman tidak ditemukan atau akses ditolak.</h1><Button className="mt-4" onClick={()=>navigate('/')}>Kembali ke Beranda</Button></div>;
             };
 
-            // Mock Authentication Switcher (For Demo Purposes)
-            const AuthSwitcher = () => (
-                <div className="fixed bottom-4 right-4 z-50 bg-white p-3 rounded-xl shadow-2xl border border-gray-200 hidden md:block">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2 text-center">Simulasi Login Mode</p>
-                    <div className="flex gap-2">
-                        <button onClick={() => { setCurrentUser(null); navigate('/'); }} className={`px-3 py-1.5 text-xs rounded font-medium ${!currentUser ? 'bg-gray-800 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}>Guest</button>
-                        <button onClick={() => { setCurrentUser(MOCK_USERS.buyer); navigate('/'); }} className={`px-3 py-1.5 text-xs rounded font-medium ${currentUser?.role === 'BUYER' ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}>Buyer</button>
-                        <button onClick={() => { setCurrentUser(MOCK_USERS.seller); navigate('/seller/dashboard'); }} className={`px-3 py-1.5 text-xs rounded font-medium ${currentUser?.role === 'SELLER' ? 'bg-agrivo-600 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}>Seller</button>
-                        <button onClick={() => { setCurrentUser(MOCK_USERS.admin); navigate('/admin'); }} className={`px-3 py-1.5 text-xs rounded font-medium ${currentUser?.role === 'ADMIN' ? 'bg-red-600 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}>Admin</button>
-                    </div>
-                </div>
-            );
-
             return (
                 <div className="min-h-screen flex flex-col relative">
                     {/* Top Navbar */}
                     <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                            <div className="flex justify-between h-16">
-                                <div className="flex items-center">
-                                    <div className="flex-shrink-0 flex items-center cursor-pointer" onClick={() => navigate('/')}>
-                                        <div className="relative w-8 h-8 mr-2 flex items-center justify-center">
-                                            <i className="fa-solid fa-leaf text-agrivoGreen-500 absolute top-0 right-0 text-[10px]"></i>
-                                            <i className="fa-solid fa-water text-agrivoBlue-500 absolute bottom-0 right-0 text-[10px]"></i>
-                                            <span className="text-agrivo-600 font-extrabold text-2xl font-serif tracking-tighter">A</span>
-                                        </div>
-                                        <span className="font-extrabold text-2xl tracking-tighter text-agrivo-600">AGRIVO</span>
-                                    </div>
-                                    <div className="hidden md:ml-10 md:flex md:space-x-8">
-                                        <a onClick={() => navigate('/')} className={`cursor-pointer inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${route==='/' ? 'border-agrivo-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}>Beranda</a>
-                                        <a onClick={() => navigate('/marketplace')} className={`cursor-pointer inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${route==='/marketplace' ? 'border-agrivo-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}`}>Pasar Pertanian</a>
-                                        <a className="cursor-pointer inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">Kebutuhan Pertanian</a>
-                                    </div>
-                                </div>
+<!-- ... existing code ... -->
                                 <div className="hidden md:flex items-center space-x-6">
                                     <i className="fa-solid fa-search text-gray-500 hover:text-agrivo-600 cursor-pointer" onClick={() => navigate('/marketplace')}></i>
                                     {currentUser ? (
@@ -1656,109 +340,34 @@
                                                 <span className="absolute -top-1 -right-1 flex h-3 w-3"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span></span>
                                             </i>
                                             <i className="fa-regular fa-bell text-gray-500 hover:text-agrivo-600 cursor-pointer text-lg"></i>
-                                            <div className="flex items-center gap-2 cursor-pointer bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200"
+                                            <div className="flex items-center gap-2 cursor-pointer bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200 hover:bg-gray-100 transition"
                                                  onClick={() => {
                                                      if(currentUser.role === 'BUYER') navigate('/buyer/orders');
-                                                     if(currentUser.role === 'SELLER') navigate('/seller/dashboard');
+                                                     if(currentUser.role === 'FARMER') navigate('/farmer/dashboard');
                                                      if(currentUser.role === 'ADMIN') navigate('/admin');
                                                  }}>
                                                 <img src={currentUser.avatar} className="w-6 h-6 rounded-full" />
-                                                <span className="text-sm font-medium">{currentUser.name}</span>
+                                                <span className="text-sm font-medium truncate max-w-[100px]">{currentUser.name}</span>
                                             </div>
+                                            <button onClick={handleLogout} className="text-sm font-semibold text-red-500 hover:text-red-700 transition">Keluar</button>
                                         </>
                                     ) : (
                                         <div className="flex items-center space-x-4">
-                                            <button className="text-gray-600 font-semibold hover:text-agrivo-600 text-sm transition-colors" onClick={() => { showToast('Halaman Login belum diimplementasi di prototipe ini. Gunakan fitur Register terlebih dahulu.', 'info'); }}>Masuk</button>
+                                            <button className="text-gray-600 font-semibold hover:text-agrivo-600 text-sm transition-colors" onClick={() => navigate('/login')}>Masuk</button>
                                             <Button size="sm" className="text-sm py-2 px-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all rounded-lg" onClick={() => navigate('/register')}>Daftar</Button>
                                         </div>
                                     )}
                                 </div>
                                 <div className="flex items-center md:hidden">
-                                    <button className="text-gray-500 hover:text-gray-700 focus:outline-none" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                                        <i className={`fa-solid ${mobileMenuOpen ? 'fa-xmark' : 'fa-bars'} text-2xl`}></i>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </nav>
-
-                    {/* Main Content Area */}
-                    <main className="flex-grow w-full">
-                        {renderPage()}
-                    </main>
-
-                    {/* Desktop Footer */}
-                    <footer className="bg-white border-t border-gray-200 hidden lg:block mt-auto">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                            <div className="grid grid-cols-4 gap-8">
-                                <div className="col-span-1">
-                                    <div className="flex items-center mb-4">
-                                        <div className="relative w-8 h-8 mr-2 flex items-center justify-center">
-                                            <i className="fa-solid fa-leaf text-agrivoGreen-500 absolute top-0 right-0 text-[10px]"></i>
-                                            <i className="fa-solid fa-water text-agrivoBlue-500 absolute bottom-0 right-0 text-[10px]"></i>
-                                            <span className="text-agrivo-600 font-extrabold text-2xl font-serif tracking-tighter">A</span>
-                                        </div>
-                                        <span className="font-extrabold text-2xl text-agrivo-600 tracking-tighter">AGRIVO</span>
-                                    </div>
-                                    <p className="text-sm text-gray-500 mb-4">Platform Digital untuk Ekosistem Pertanian Indonesia. Dari Petani, Untuk Indonesia.</p>
-                                    <div className="flex space-x-4 text-gray-400">
-                                        <i className="fa-brands fa-instagram hover:text-agrivo-600 cursor-pointer"></i>
-                                        <i className="fa-brands fa-facebook hover:text-agrivo-600 cursor-pointer"></i>
-                                        <i className="fa-brands fa-linkedin hover:text-agrivo-600 cursor-pointer"></i>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-gray-900 mb-4">Layanan</h4>
-                                    <ul className="space-y-2 text-sm text-gray-500">
-                                        <li className="hover:text-agrivo-600 cursor-pointer" onClick={() => navigate('/marketplace')}>Pasar Pertanian</li>
-                                        <li className="hover:text-agrivo-600 cursor-pointer">Kebutuhan Pertanian</li>
-                                        <li className="hover:text-agrivo-600 cursor-pointer">AGRIVO Jobs</li>
-                                    </ul>
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-gray-900 mb-4">Bantuan</h4>
-                                    <ul className="space-y-2 text-sm text-gray-500">
-                                        <li className="hover:text-agrivo-600 cursor-pointer">Cara Belanja</li>
-                                        <li className="hover:text-agrivo-600 cursor-pointer">Mulai Berjualan</li>
-                                        <li className="hover:text-agrivo-600 cursor-pointer">Hubungi Kami</li>
-                                    </ul>
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-gray-900 mb-4">Keamanan</h4>
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <i className="fa-solid fa-shield-check text-agrivo-500"></i>
-                                        <span className="text-sm text-gray-500">Pembayaran Aman</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <i className="fa-solid fa-user-check text-agrivo-500"></i>
-                                        <span className="text-sm text-gray-500">Pengguna Terverifikasi</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="border-t border-gray-100 mt-12 pt-8 text-center text-sm text-gray-400">
-                                &copy; 2026 AGRIVO. All rights reserved.
-                            </div>
-                        </div>
-                    </footer>
-
-                    {/* Mobile Bottom Navigation (Mobile-First approach) */}
-                    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around items-center h-16 z-50 pb-[env(safe-area-inset-bottom)]">
-                        <button onClick={() => navigate('/')} className={`flex flex-col items-center justify-center w-full h-full ${route==='/' ? 'text-agrivo-600' : 'text-gray-400'}`}>
-                            <i className="fa-solid fa-house text-xl mb-1"></i>
-                            <span className="text-[10px] font-medium">Home</span>
-                        </button>
-                        <button onClick={() => navigate('/marketplace')} className={`flex flex-col items-center justify-center w-full h-full ${route==='/marketplace' ? 'text-agrivo-600' : 'text-gray-400'}`}>
-                            <i className="fa-solid fa-store text-xl mb-1"></i>
-                            <span className="text-[10px] font-medium">Pasar</span>
-                        </button>
+<!-- ... existing code ... -->
                         {currentUser?.role === 'BUYER' && (
                             <button onClick={() => navigate('/buyer/orders')} className={`flex flex-col items-center justify-center w-full h-full ${route==='/buyer/orders' ? 'text-agrivo-600' : 'text-gray-400'}`}>
                                 <i className="fa-solid fa-receipt text-xl mb-1"></i>
                                 <span className="text-[10px] font-medium">Pesanan</span>
                             </button>
                         )}
-                        {currentUser?.role === 'SELLER' && (
-                            <button onClick={() => navigate('/seller/dashboard')} className={`flex flex-col items-center justify-center w-full h-full ${route==='/seller/dashboard' ? 'text-agrivo-600' : 'text-gray-400'}`}>
+                        {currentUser?.role === 'FARMER' && (
+                            <button onClick={() => navigate('/farmer/dashboard')} className={`flex flex-col items-center justify-center w-full h-full ${route==='/farmer/dashboard' ? 'text-agrivo-600' : 'text-gray-400'}`}>
                                 <i className="fa-solid fa-chart-line text-xl mb-1"></i>
                                 <span className="text-[10px] font-medium">Toko</span>
                             </button>
@@ -1769,15 +378,14 @@
                             <span className="text-[10px] font-medium">Chat</span>
                         </button>
                         <button onClick={() => {
-                            if(!currentUser) setCurrentUser(MOCK_USERS.buyer);
-                            else { setCurrentUser(null); navigate('/'); }
-                        }} className="flex flex-col items-center justify-center w-full h-full text-gray-400">
-                            <i className="fa-regular fa-user text-xl mb-1"></i>
+                            if(!currentUser) navigate('/login');
+                            else handleLogout();
+                        }} className="flex flex-col items-center justify-center w-full h-full text-gray-400 hover:text-agrivo-600 transition">
+                            <i className={`fa-solid ${currentUser ? 'fa-right-from-bracket text-red-500' : 'fa-user'} text-xl mb-1`}></i>
                             <span className="text-[10px] font-medium">{currentUser ? 'Keluar' : 'Profil'}</span>
                         </button>
                     </div>
 
-                    <AuthSwitcher />
                     <AgriBot />
                     
                     {/* Global Toast Notification */}
@@ -1787,7 +395,10 @@
         };
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
-    </script>
-</body>
-</html>
+<!-- ... existing code ... -->
+```
+
+### Cara Kerja Autentikasi:
+- **`App` Router (`useEffect`):** Mengecek secara *realtime* perubahan *state* `route` dan `currentUser`. Jika mencoba mengakses halaman berawalan `/buyer`, `/farmer`, atau `/admin` tanpa `currentUser`, Anda akan terlempar otomatis ke halaman `/login`. Sebaliknya, jika Anda telah memiliki session dan pergi ke rute *auth*, sistem langsung mengarahkan Anda (Redirect) menuju dashboard sesuai Role Anda.
+- **Navigasi Dinamis:** Tombol di Desktop Header (kanan atas) dan Mobile Bottom Navigation Bar (bawah layar) akan secara otomatis merender antara "Masuk/Daftar" (jika belum terautentikasi) dan Foto Profil/Tombol "Keluar" (jika sudah terautentikasi). 
+- **Mock DB:** Untuk proses testing / QA, silakan masuk ke menu **Masuk/Login**, gunakan email `buyer@agrivo.com` atau `farmer@agrivo.com` dan password `password123`. Form akan memproses, melakukan *loading*, dan mengarahkan Anda sesuai struktur role yang semestinya.
