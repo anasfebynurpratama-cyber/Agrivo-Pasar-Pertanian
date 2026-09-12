@@ -343,7 +343,7 @@
         // 3. PAGES
         // ==========================================
 
-        const RegisterPage = ({ navigate }) => {
+        const RegisterPage = ({ navigate, showToast }) => {
             const [role, setRole] = useState('BUYER');
             const [formData, setFormData] = useState({
                 name: '', phone: '', email: '', password: '', confirmPassword: '',
@@ -481,10 +481,10 @@
                     </div>
 
                     {/* Right Form Area */}
-                    <div className="w-full lg:w-7/12 flex justify-center py-12 px-4 sm:px-6 lg:px-16 overflow-y-auto bg-white">
+                    <div className="w-full lg:w-7/12 flex justify-center py-8 md:py-12 px-4 sm:px-6 lg:px-16 overflow-y-auto bg-white">
                         <div className="w-full max-w-[540px]">
                             {/* Mobile Header (Hidden on Desktop) */}
-                            <div className="lg:hidden flex items-center justify-center mb-10 cursor-pointer" onClick={() => navigate('/')}>
+                            <div className="lg:hidden flex items-center justify-center mb-8 cursor-pointer" onClick={() => navigate('/')}>
                                 <div className="relative w-8 h-8 mr-2 flex items-center justify-center">
                                     <i className="fa-solid fa-leaf text-agrivoGreen-500 absolute top-0 right-0 text-[10px]"></i>
                                     <i className="fa-solid fa-water text-agrivoBlue-500 absolute bottom-0 right-0 text-[10px]"></i>
@@ -509,26 +509,26 @@
                                 {/* Account Type Selection */}
                                 <div>
                                     <label className="block text-sm font-semibold text-gray-700 mb-3">Saya ingin mendaftar sebagai:</label>
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-2 gap-3 md:gap-4">
                                         <div 
                                             onClick={() => setRole('BUYER')} 
-                                            className={`p-5 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center text-center group ${role === 'BUYER' ? 'border-agrivo-600 bg-agrivo-50/50 shadow-sm' : 'border-gray-200 bg-white hover:border-agrivo-300'}`}
+                                            className={`p-4 md:p-5 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center text-center group ${role === 'BUYER' ? 'border-agrivo-600 bg-agrivo-50/50 shadow-sm' : 'border-gray-200 bg-white hover:border-agrivo-300'}`}
                                         >
-                                            <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-3 transition-colors ${role === 'BUYER' ? 'bg-agrivo-600 text-white' : 'bg-gray-100 text-gray-400 group-hover:bg-agrivo-100 group-hover:text-agrivo-600'}`}>
-                                                <i className="fa-solid fa-basket-shopping text-lg"></i>
+                                            <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-3 transition-colors ${role === 'BUYER' ? 'bg-agrivo-600 text-white' : 'bg-gray-100 text-gray-400 group-hover:bg-agrivo-100 group-hover:text-agrivo-600'}`}>
+                                                <i className="fa-solid fa-basket-shopping text-base md:text-lg"></i>
                                             </div>
-                                            <span className={`font-bold text-sm ${role === 'BUYER' ? 'text-agrivo-900' : 'text-gray-700'}`}>Pembeli</span>
-                                            <span className="text-xs text-gray-500 mt-1 leading-tight">Mencari & belanja kebutuhan pertanian</span>
+                                            <span className={`font-bold text-xs md:text-sm ${role === 'BUYER' ? 'text-agrivo-900' : 'text-gray-700'}`}>Pembeli</span>
+                                            <span className="text-[10px] md:text-xs text-gray-500 mt-1 leading-tight">Mencari & belanja kebutuhan</span>
                                         </div>
                                         <div 
                                             onClick={() => setRole('SELLER')} 
-                                            className={`p-5 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center text-center group ${role === 'SELLER' ? 'border-agrivo-600 bg-agrivo-50/50 shadow-sm' : 'border-gray-200 bg-white hover:border-agrivo-300'}`}
+                                            className={`p-4 md:p-5 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center text-center group ${role === 'SELLER' ? 'border-agrivo-600 bg-agrivo-50/50 shadow-sm' : 'border-gray-200 bg-white hover:border-agrivo-300'}`}
                                         >
-                                            <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-3 transition-colors ${role === 'SELLER' ? 'bg-agrivo-600 text-white' : 'bg-gray-100 text-gray-400 group-hover:bg-agrivo-100 group-hover:text-agrivo-600'}`}>
-                                                <i className="fa-solid fa-store text-lg"></i>
+                                            <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mb-3 transition-colors ${role === 'SELLER' ? 'bg-agrivo-600 text-white' : 'bg-gray-100 text-gray-400 group-hover:bg-agrivo-100 group-hover:text-agrivo-600'}`}>
+                                                <i className="fa-solid fa-store text-base md:text-lg"></i>
                                             </div>
-                                            <span className={`font-bold text-sm ${role === 'SELLER' ? 'text-agrivo-900' : 'text-gray-700'}`}>Penjual / Petani</span>
-                                            <span className="text-xs text-gray-500 mt-1 leading-tight">Membuka toko & jualan hasil panen</span>
+                                            <span className={`font-bold text-xs md:text-sm ${role === 'SELLER' ? 'text-agrivo-900' : 'text-gray-700'}`}>Penjual / Petani</span>
+                                            <span className="text-[10px] md:text-xs text-gray-500 mt-1 leading-tight">Buka toko & jual hasil panen</span>
                                         </div>
                                     </div>
                                 </div>
@@ -640,7 +640,7 @@
                                 </button>
 
                                 <p className="text-center text-sm text-gray-600 mt-10 pb-8">
-                                    Sudah memiliki akun? <a onClick={() => { alert('Halaman Login belum tersedia di prototipe. Gunakan Panel Simulasi Login di pojok kanan bawah.'); }} className="font-bold text-agrivo-600 hover:text-agrivo-700 cursor-pointer hover:underline">Masuk di sini</a>
+                                    Sudah memiliki akun? <a onClick={() => { showToast('Halaman Login belum tersedia di prototipe. Gunakan Panel Simulasi Login di pojok kanan bawah.', 'info'); }} className="font-bold text-agrivo-600 hover:text-agrivo-700 cursor-pointer hover:underline">Masuk di sini</a>
                                 </p>
                             </form>
                         </div>
@@ -649,7 +649,7 @@
             );
         };
 
-        const VerifyOTPPage = ({ route, navigate }) => {
+        const VerifyOTPPage = ({ route, navigate, showToast }) => {
             const [otp, setOtp] = useState(['', '', '', '', '', '']);
             const [timer, setTimer] = useState(30);
             const [error, setError] = useState('');
@@ -698,8 +698,8 @@
                     const response = await api.verifyOTP(userId, code);
                     if (response.success) {
                         // User successfully verified. Ready for onboarding.
-                        alert('✅ Verifikasi Berhasil! Akun aktif. Mengarahkan Anda ke Dashboard...');
-                        navigate('/marketplace'); 
+                        showToast('Verifikasi Berhasil! Akun aktif. Mengarahkan Anda ke Dashboard...', 'success');
+                        setTimeout(() => navigate('/marketplace'), 1500); 
                     } else {
                         setError(response.message);
                     }
@@ -752,7 +752,7 @@
                             {timer > 0 ? (
                                 <span className="text-gray-400 mt-1 inline-block">Kirim ulang tersedia dalam <b>{timer}s</b></span>
                             ) : (
-                                <button onClick={() => { setTimer(30); alert('Kode OTP baru telah dikirimkan (Simulasi). Gunakan 123456 untuk testing.'); }} className="font-bold text-agrivo-600 hover:text-agrivo-700 hover:underline mt-1 inline-block transition-colors">Kirim Ulang Kode Sekarang</button>
+                                <button onClick={() => { setTimer(30); showToast('Kode OTP baru telah dikirimkan (Simulasi). Gunakan 123456 untuk testing.', 'info'); }} className="font-bold text-agrivo-600 hover:text-agrivo-700 hover:underline mt-1 inline-block transition-colors">Kirim Ulang Kode Sekarang</button>
                             )}
                         </div>
                     </div>
@@ -760,7 +760,7 @@
             );
         };
 
-        const HomePage = ({ navigate }) => {
+        const HomePage = ({ navigate, showToast }) => {
             const categories = [
                 { icon: '🌾', name: 'Padi & Beras' },
                 { icon: '🌽', name: 'Jagung' },
@@ -941,7 +941,7 @@
             );
         };
 
-        const ProductDetailPage = ({ id, navigate, currentUser }) => {
+        const ProductDetailPage = ({ id, navigate, currentUser, showToast }) => {
             const [product, setProduct] = useState(null);
             const [qty, setQty] = useState(0);
 
@@ -955,8 +955,8 @@
             if (!product) return <div className="p-20 text-center">Loading...</div>;
 
             const handleBuy = () => {
-                if(!currentUser) return alert('Silakan login sebagai Buyer terlebih dahulu.');
-                if(currentUser.role !== 'BUYER') return alert('Hanya akun Buyer yang dapat membuat pesanan.');
+                if(!currentUser) return showToast('Silakan login sebagai Buyer terlebih dahulu.', 'error');
+                if(currentUser.role !== 'BUYER') return showToast('Hanya akun Buyer yang dapat membuat pesanan.', 'error');
                 navigate(`/checkout/${product.id}?qty=${qty}`);
             };
 
@@ -1063,7 +1063,7 @@
             );
         };
 
-        const CheckoutPage = ({ id, qty, navigate, currentUser }) => {
+        const CheckoutPage = ({ id, qty, navigate, currentUser, showToast }) => {
             const [product, setProduct] = useState(null);
             
             useEffect(() => {
@@ -1087,7 +1087,7 @@
                     subtotal, fee, total
                 };
                 await api.createOrder(orderData);
-                alert('Pesanan berhasil dibuat!');
+                showToast('Pesanan berhasil dibuat!', 'success');
                 navigate('/buyer/orders');
             };
 
@@ -1196,7 +1196,7 @@
             );
         };
 
-        const BuyerDashboard = ({ currentUser }) => {
+        const BuyerDashboard = ({ currentUser, showToast }) => {
             const [orders, setOrders] = useState([]);
             useEffect(() => {
                 api.getOrdersByUser(currentUser.id, 'BUYER').then(setOrders);
@@ -1246,7 +1246,7 @@
                                             <p className="font-bold text-agrivo-600 text-lg">{formatCurrency(order.total)}</p>
                                         </div>
                                         {order.status === 'DELIVERED' && (
-                                            <Button size="sm" className="mt-2 text-xs py-1" onClick={() => alert('Fitur Review segera hadir!')}>Selesaikan & Ulas</Button>
+                                            <Button size="sm" className="mt-2 text-xs py-1" onClick={() => showToast('Fitur Review segera hadir!', 'info')}>Selesaikan & Ulas</Button>
                                         )}
                                     </div>
                                 </div>
@@ -1322,7 +1322,7 @@
             );
         };
 
-        const SellerDashboard = ({ currentUser }) => {
+        const SellerDashboard = ({ currentUser, showToast }) => {
             const [orders, setOrders] = useState([]);
             const [showAddModal, setShowAddModal] = useState(false);
 
@@ -1418,8 +1418,8 @@
                         isOpen={showAddModal} 
                         onClose={() => setShowAddModal(false)}
                         onSave={(data) => {
-                            if(!data.name) return alert('Nama produk wajib diisi.');
-                            alert(`Produk "${data.name}" berhasil ditambahkan ke toko Anda! (Mode Simulasi)`);
+                            if(!data.name) return showToast('Nama produk wajib diisi.', 'error');
+                            showToast(`Produk "${data.name}" berhasil ditambahkan ke toko Anda! (Mode Simulasi)`, 'success');
                             setShowAddModal(false);
                         }} 
                     />
@@ -1560,10 +1560,32 @@
         // 4. MAIN LAYOUT & ROUTING (App Component)
         // ==========================================
 
+        const Toast = ({ message, type, onClose }) => {
+            if (!message) return null;
+            const bg = type === 'success' ? 'bg-green-600' : type === 'error' ? 'bg-red-600' : 'bg-gray-800';
+            return (
+                <div className={`fixed top-4 md:top-6 left-1/2 transform -translate-x-1/2 z-[9999] px-5 py-3 rounded-xl shadow-2xl text-white font-medium flex items-center text-sm fade-in ${bg} min-w-[300px] max-w-[90vw] justify-between`}>
+                    <div className="flex items-center">
+                        {type === 'success' && <i className="fa-solid fa-circle-check mr-3 text-lg"></i>}
+                        {type === 'error' && <i className="fa-solid fa-triangle-exclamation mr-3 text-lg"></i>}
+                        {type === 'info' && <i className="fa-solid fa-circle-info mr-3 text-lg"></i>}
+                        <span className="leading-tight">{message}</span>
+                    </div>
+                    <button onClick={onClose} className="ml-4 opacity-70 hover:opacity-100 transition-opacity p-1"><i className="fa-solid fa-xmark"></i></button>
+                </div>
+            );
+        };
+
         const App = () => {
             const [route, setRoute] = useState('/');
             const [currentUser, setCurrentUser] = useState(null); // default not logged in
             const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+            const [toast, setToast] = useState({ show: false, message: '', type: 'info' });
+
+            const showToast = (message, type = 'info') => {
+                setToast({ show: true, message, type });
+                setTimeout(() => setToast({ show: false, message: '', type: 'info' }), 4000);
+            };
 
             // Simple client-side router
             const navigate = (path) => {
@@ -1573,20 +1595,20 @@
             };
 
             const renderPage = () => {
-                if (route === '/') return <HomePage navigate={navigate} />;
-                if (route === '/register') return <RegisterPage navigate={navigate} />;
-                if (route.startsWith('/verify')) return <VerifyOTPPage route={route} navigate={navigate} />;
+                if (route === '/') return <HomePage navigate={navigate} showToast={showToast} />;
+                if (route === '/register') return <RegisterPage navigate={navigate} showToast={showToast} />;
+                if (route.startsWith('/verify')) return <VerifyOTPPage route={route} navigate={navigate} showToast={showToast} />;
                 if (route === '/marketplace') return <MarketplacePage navigate={navigate} />;
-                if (route.startsWith('/product/')) return <ProductDetailPage id={route.split('/')[2]} navigate={navigate} currentUser={currentUser} />;
+                if (route.startsWith('/product/')) return <ProductDetailPage id={route.split('/')[2]} navigate={navigate} currentUser={currentUser} showToast={showToast} />;
                 if (route.startsWith('/checkout/')) {
                     const params = new URLSearchParams(route.split('?')[1]);
-                    return <CheckoutPage id={route.split('/')[2].split('?')[0]} qty={params.get('qty') || 1} navigate={navigate} currentUser={currentUser} />;
+                    return <CheckoutPage id={route.split('/')[2].split('?')[0]} qty={params.get('qty') || 1} navigate={navigate} currentUser={currentUser} showToast={showToast} />;
                 }
                 if (route === '/chat') return <ChatPage navigate={navigate} currentUser={currentUser} />;
                 
                 // Protected Routes
-                if (route === '/buyer/orders' && currentUser?.role === 'BUYER') return <BuyerDashboard currentUser={currentUser} />;
-                if (route === '/seller/dashboard' && currentUser?.role === 'SELLER') return <SellerDashboard currentUser={currentUser} />;
+                if (route === '/buyer/orders' && currentUser?.role === 'BUYER') return <BuyerDashboard currentUser={currentUser} showToast={showToast} />;
+                if (route === '/seller/dashboard' && currentUser?.role === 'SELLER') return <SellerDashboard currentUser={currentUser} showToast={showToast} />;
                 if (route === '/admin' && currentUser?.role === 'ADMIN') return <AdminDashboard />;
                 
                 return <div className="p-20 text-center"><h1 className="text-2xl font-bold">404 - Halaman tidak ditemukan atau akses ditolak.</h1><Button className="mt-4" onClick={()=>navigate('/')}>Kembali ke Beranda</Button></div>;
@@ -1646,7 +1668,7 @@
                                         </>
                                     ) : (
                                         <div className="flex items-center space-x-4">
-                                            <button className="text-gray-600 font-semibold hover:text-agrivo-600 text-sm transition-colors" onClick={() => { alert('Halaman Login belum diimplementasi di prototipe ini. Gunakan fitur Register terlebih dahulu.'); }}>Masuk</button>
+                                            <button className="text-gray-600 font-semibold hover:text-agrivo-600 text-sm transition-colors" onClick={() => { showToast('Halaman Login belum diimplementasi di prototipe ini. Gunakan fitur Register terlebih dahulu.', 'info'); }}>Masuk</button>
                                             <Button size="sm" className="text-sm py-2 px-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all rounded-lg" onClick={() => navigate('/register')}>Daftar</Button>
                                         </div>
                                     )}
@@ -1757,6 +1779,9 @@
 
                     <AuthSwitcher />
                     <AgriBot />
+                    
+                    {/* Global Toast Notification */}
+                    {toast.show && <Toast message={toast.message} type={toast.type} onClose={() => setToast({show: false})} />}
                 </div>
             );
         };
