@@ -1,0 +1,61 @@
+npm create vite@latest agrivo-app -- --template react
+cd agrivo-app
+npm install
+npm install react-router-dom
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+      },
+      colors: {
+        agrivo: {
+          50: '#fdf2f2',
+          100: '#fbe5e5',
+          200: '#f5caca',
+          300: '#efa2a2',
+          400: '#e56c6c',
+          500: '#db3e3e',
+          600: '#c52020', // Merah Dominan AGRIVO
+          700: '#a51818',
+          800: '#881717',
+          900: '#721919',
+        },
+        agrivoGreen: {
+          500: '#2b7a1f', // Hijau Pertanian
+        },
+        agrivoBlue: {
+          500: '#0070c0', // Biru Perairan
+        }
+      }
+    },
+  },
+  plugins: [],
+}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #f8fafc;
+  color: #0f172a;
+}
+
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.fade-in { animation: fadeIn 0.3s ease-in-out; }
+@keyframes fadeIn { 
+  from { opacity: 0; transform: translateY(10px); } 
+  to { opacity: 1; transform: translateY(0); } 
+}
+mkdir -p src/assets/images src/components/common src/components/layout src/components/specific src/pages/public src/pages/auth src/pages/dashboards src/services src/utils
+npm run dev
+
