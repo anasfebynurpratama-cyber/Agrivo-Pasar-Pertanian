@@ -72,11 +72,11 @@
         // 1. MOCK DATA LAYER (Simulating PostgreSQL/Laravel API)
         // ==========================================
         
-        const MOCK_USERS = {
-            buyer: { id: 'u1', name: 'Ahmad Pembeli', role: 'BUYER', avatar: 'https://i.pravatar.cc/150?u=u1' },
-            seller: { id: 'u2', name: 'Pak Budi Farm', role: 'SELLER', avatar: 'https://i.pravatar.cc/150?u=u2', verified: true, location: 'Sidoarjo' },
-            admin: { id: 'u3', name: 'Admin AGRIVO', role: 'ADMIN', avatar: 'https://i.pravatar.cc/150?u=u3' }
-        };
+        let MOCK_USERS_DB = [
+            { id: 'u1', name: 'Ahmad Pembeli', role: 'BUYER', email: 'buyer@agrivo.com', phone: '081234567890', password: 'Password123', avatar: 'https://i.pravatar.cc/150?u=u1' },
+            { id: 'u2', name: 'Pak Budi Farm', role: 'SELLER', email: 'seller@agrivo.com', phone: '081234567891', password: 'Password123', avatar: 'https://i.pravatar.cc/150?u=u2', verified: true, location: 'Sidoarjo' },
+            { id: 'u3', name: 'Admin AGRIVO', role: 'ADMIN', email: 'admin@agrivo.com', phone: '081234567892', password: 'Password123', avatar: 'https://i.pravatar.cc/150?u=u3' }
+        ];
 
         let MOCK_PRODUCTS = [
             { id: 'p1', sellerId: 'u2', sellerName: 'Pak Budi Farm', name: 'Cabai Merah Besar Premium', category: 'Cabai', price: 28000, unit: 'kg', stock: 500, minOrder: 10, location: 'Sidoarjo, Jawa Timur', rating: 4.9, image: 'https://images.unsplash.com/photo-1588880196853-53372c019d9b?auto=format&fit=crop&q=80&w=800', description: 'Cabai merah besar segar langsung dari kebun. Cocok untuk industri makanan dan restoran. Dipanen setiap pagi.', status: 'APPROVED' },
@@ -172,32 +172,50 @@
                 return order;
             },
             
+            login: async (email, password) => {
+                // Mensimulasikan loading jaringan
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                if (!email) return { success: false, message: 'Email belum diisi.' };
+                if (!password) return { success: false, message: 'Password belum diisi.' };
+                
+                const user = MOCK_USERS_DB.find(u => u.email === email);
+                if (!user) return { success: false, message: 'Email tidak ditemukan.' };
+                if (user.password !== password) return { success: false, message: 'Password salah.' };
+                
+                return { success: true, message: 'Login berhasil', data: user };
+            },
+
             register: async (payload) => {
                 // Simulate network latency & server processing
                 await new Promise(resolve => setTimeout(resolve, 1500));
                 
                 // Server-side validation simulation (Security Layer)
-                if (!payload.name || !payload.phone || !payload.password || !payload.provinceId) {
-                    return { success: false, message: 'Validasi gagal: Harap lengkapi data wajib.' };
+                if (!payload.email) return { success: false, message: 'Email belum diisi.' };
+                if (!payload.password || payload.password.length < 8) return { success: false, message: 'Password terlalu pendek (minimal 8 karakter).' };
+                if (payload.password !== payload.confirmPassword) return { success: false, message: 'Password dan konfirmasi password tidak sama.' };
+
+                if (MOCK_USERS_DB.some(u => u.email === payload.email)) {
+                    return { success: false, message: 'Email sudah terdaftar. Silakan gunakan email lain atau masuk ke akun Anda.' };
                 }
-                if (payload.password !== payload.confirmPassword) {
-                    return { success: false, message: 'Validasi gagal: Konfirmasi password tidak cocok.' };
-                }
-                
-                // Mock Uniqueness Check against Database
-                if (payload.phone === '081234567890' || payload.phone === '+6281234567890') {
-                    return { success: false, message: 'Nomor WhatsApp tersebut sudah terdaftar. Silakan masuk atau gunakan nomor lain.' };
+
+                if (MOCK_USERS_DB.some(u => u.phone === payload.phone)) {
+                    return { success: false, message: 'Nomor WhatsApp tersebut sudah terdaftar.' };
                 }
 
                 // Simulate DB Insert (Users + Profiles + Businesses)
                 const newUser = {
                     id: 'u' + Date.now(),
                     name: payload.name,
+                    email: payload.email,
                     phone: payload.phone,
+                    password: payload.password,
                     role: payload.role, 
                     avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(payload.name)}&background=c52020&color=fff`,
                     status: 'PENDING_VERIFICATION' // Strict state machine: requires OTP
                 };
+                
+                MOCK_USERS_DB.push(newUser);
                 
                 // Return success without logging user in yet (redirect to verification required)
                 return { success: true, message: 'Registrasi berhasil', data: { userId: newUser.id, phone: payload.phone } };
@@ -342,6 +360,136 @@
         // ==========================================
         // 3. PAGES
         // ==========================================
+
+        const LoginPage = ({ navigate, showToast, onLoginSuccess }) => {
+            const [formData, setFormData] = useState({ email: '', password: '' });
+            const [isLoading, setIsLoading] = useState(false);
+            const [error, setError] = useState('');
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setError('');
+                if (!formData.email) return setError('Email belum diisi.');
+                if (!formData.password) return setError('Password belum diisi.');
+
+                setIsLoading(true);
+                try {
+                    const response = await api.login(formData.email, formData.password);
+                    if (response.success) {
+                        showToast(response.message, 'success');
+                        onLoginSuccess(response.data);
+                        
+                        // Redirect berdasarkan peran (Role)
+                        if (response.data.role === 'BUYER') navigate('/buyer/orders');
+                        else if (response.data.role === 'SELLER') navigate('/seller/dashboard');
+                        else if (response.data.role === 'ADMIN') navigate('/admin');
+                        else navigate('/');
+                    } else {
+                        setError(response.message);
+                    }
+                } catch (err) {
+                    setError('Koneksi bermasalah. Periksa internet Anda.');
+                } finally {
+                    setIsLoading(false);
+                }
+            };
+
+            return (
+                <div className="min-h-screen bg-gray-50 flex fade-in">
+                    {/* Left Branding Area (Desktop Only) */}
+                    <div className="hidden lg:flex w-5/12 relative flex-col justify-between p-14 overflow-hidden">
+                        <div className="absolute inset-0 bg-agrivo-900">
+                            <div className="absolute inset-0 opacity-40 bg-[url('https://images.unsplash.com/photo-1595841696677-6489ff3f8cd1?auto=format&fit=crop&q=80&w=1200')] bg-cover bg-center mix-blend-overlay"></div>
+                            <div className="absolute inset-0 bg-gradient-to-t from-agrivo-900 via-transparent to-agrivo-900/50"></div>
+                        </div>
+                        <div className="relative z-10">
+                            <div className="flex items-center cursor-pointer" onClick={() => navigate('/')}>
+                                <div className="relative w-10 h-10 mr-3 flex items-center justify-center">
+                                    <i className="fa-solid fa-leaf text-agrivoGreen-500 absolute top-0 right-0 text-sm drop-shadow-md"></i>
+                                    <i className="fa-solid fa-water text-agrivoBlue-500 absolute bottom-0 right-0 text-sm drop-shadow-md"></i>
+                                    <span className="text-white font-extrabold text-4xl font-serif tracking-tighter drop-shadow-md">A</span>
+                                </div>
+                                <span className="font-extrabold text-3xl tracking-tighter text-white drop-shadow-md">AGRIVO</span>
+                            </div>
+                            <div className="mt-20 max-w-sm">
+                                <Badge type="success" className="bg-white/10 text-agrivo-100 border border-white/20 backdrop-blur-sm shadow-sm font-semibold mb-6">Selamat Datang Kembali</Badge>
+                                <h1 className="text-4xl lg:text-5xl font-bold text-white leading-tight">Masuk ke Ekosistem AGRIVO.</h1>
+                                <p className="text-agrivo-100 mt-6 text-lg leading-relaxed font-light">
+                                    Pantau pesanan, kelola toko, dan temukan hasil pertanian segar langsung dari platform kami.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right Form Area */}
+                    <div className="w-full lg:w-7/12 flex justify-center items-center py-12 px-4 sm:px-6 lg:px-16 bg-white">
+                        <div className="w-full max-w-md">
+                            {/* Mobile Header (Hidden on Desktop) */}
+                            <div className="lg:hidden flex items-center justify-center mb-8 cursor-pointer" onClick={() => navigate('/')}>
+                                <div className="relative w-8 h-8 mr-2 flex items-center justify-center">
+                                    <i className="fa-solid fa-leaf text-agrivoGreen-500 absolute top-0 right-0 text-[10px]"></i>
+                                    <i className="fa-solid fa-water text-agrivoBlue-500 absolute bottom-0 right-0 text-[10px]"></i>
+                                    <span className="text-agrivo-600 font-extrabold text-2xl font-serif tracking-tighter">A</span>
+                                </div>
+                                <span className="font-extrabold text-2xl tracking-tighter text-agrivo-600">AGRIVO</span>
+                            </div>
+
+                            <div className="mb-8">
+                                <h2 className="text-3xl font-bold text-gray-900">Masuk ke Akun Anda</h2>
+                                <p className="text-gray-500 mt-2 text-[15px]">Gunakan email dan password yang telah didaftarkan.</p>
+                            </div>
+
+                            {error && (
+                                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-start text-red-700 text-sm fade-in">
+                                    <i className="fa-solid fa-triangle-exclamation mt-0.5 mr-3 text-red-500"></i>
+                                    <span className="font-medium">{error}</span>
+                                </div>
+                            )}
+
+                            <form onSubmit={handleSubmit} className="space-y-5">
+                                <InputGroup 
+                                    label="Email Lengkap" 
+                                    type="email" 
+                                    placeholder="nama@email.com" 
+                                    icon="fa-envelope" 
+                                    value={formData.email} 
+                                    onChange={e => setFormData({...formData, email: e.target.value})} 
+                                />
+                                <div>
+                                    <PasswordInput 
+                                        label="Password" 
+                                        placeholder="Masukkan password Anda" 
+                                        value={formData.password} 
+                                        onChange={e => setFormData({...formData, password: e.target.value})} 
+                                    />
+                                    <div className="flex justify-end -mt-2 mb-4">
+                                        <a href="#" onClick={(e) => { e.preventDefault(); showToast('Fitur Lupa Password segera hadir.', 'info'); }} className="text-sm font-semibold text-agrivo-600 hover:text-agrivo-700">Lupa Password?</a>
+                                    </div>
+                                </div>
+
+                                <Button type="submit" disabled={isLoading} className="w-full py-4 text-lg rounded-xl shadow-[0_4px_14px_0_rgba(197,32,32,0.39)] hover:shadow-[0_6px_20px_rgba(197,32,32,0.23)] hover:-translate-y-0.5 transition-all duration-200">
+                                    {isLoading ? <><i className="fa-solid fa-circle-notch fa-spin mr-2"></i> Memproses...</> : 'Masuk Sekarang'}
+                                </Button>
+
+                                <p className="text-center text-sm text-gray-600 mt-8">
+                                    Belum memiliki akun? <a onClick={() => navigate('/register')} className="font-bold text-agrivo-600 hover:text-agrivo-700 cursor-pointer hover:underline">Daftar di sini</a>
+                                </p>
+                            </form>
+                            
+                            {/* DEMO INFO BOX */}
+                            <div className="mt-8 pt-6 border-t border-gray-100 bg-gray-50 p-4 rounded-xl text-xs text-gray-500">
+                                <p className="font-bold mb-2">Gunakan Akun Demo berikut untuk simulasi:</p>
+                                <ul className="space-y-1">
+                                    <li>🧑‍🌾 Pembeli: <b>buyer@agrivo.com</b> | Pass: <b>Password123</b></li>
+                                    <li>🏪 Petani: <b>seller@agrivo.com</b> | Pass: <b>Password123</b></li>
+                                    <li>⚙️ Admin: <b>admin@agrivo.com</b> | Pass: <b>Password123</b></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
 
         const RegisterPage = ({ navigate, showToast }) => {
             const [role, setRole] = useState('BUYER');
@@ -640,7 +788,7 @@
                                 </button>
 
                                 <p className="text-center text-sm text-gray-600 mt-10 pb-8">
-                                    Sudah memiliki akun? <a onClick={() => { showToast('Halaman Login belum tersedia di prototipe. Gunakan Panel Simulasi Login di pojok kanan bawah.', 'info'); }} className="font-bold text-agrivo-600 hover:text-agrivo-700 cursor-pointer hover:underline">Masuk di sini</a>
+                                    Sudah memiliki akun? <a onClick={() => navigate('/login')} className="font-bold text-agrivo-600 hover:text-agrivo-700 cursor-pointer hover:underline">Masuk di sini</a>
                                 </p>
                             </form>
                         </div>
@@ -1594,35 +1742,62 @@
                 setMobileMenuOpen(false);
             };
 
+            const handleLogout = () => {
+                setCurrentUser(null);
+                showToast('Anda berhasil keluar.', 'success');
+                navigate('/login');
+            };
+
+            // Middleware/Guard untuk membatasi akses URL
+            const ProtectedRoute = ({ element, allowedRoles }) => {
+                if (!currentUser) {
+                    setTimeout(() => {
+                        showToast('Silakan masuk terlebih dahulu untuk mengakses halaman.', 'error');
+                        navigate('/login');
+                    }, 0);
+                    return null;
+                }
+                if (allowedRoles && !allowedRoles.includes(currentUser.role)) {
+                    setTimeout(() => {
+                        showToast('Akses ditolak. Anda tidak memiliki izin untuk melihat halaman ini.', 'error');
+                        navigate('/');
+                    }, 0);
+                    return null;
+                }
+                return element;
+            };
+
             const renderPage = () => {
                 if (route === '/') return <HomePage navigate={navigate} showToast={showToast} />;
                 if (route === '/register') return <RegisterPage navigate={navigate} showToast={showToast} />;
+                if (route === '/login') return <LoginPage navigate={navigate} showToast={showToast} onLoginSuccess={setCurrentUser} />;
                 if (route.startsWith('/verify')) return <VerifyOTPPage route={route} navigate={navigate} showToast={showToast} />;
                 if (route === '/marketplace') return <MarketplacePage navigate={navigate} />;
                 if (route.startsWith('/product/')) return <ProductDetailPage id={route.split('/')[2]} navigate={navigate} currentUser={currentUser} showToast={showToast} />;
                 if (route.startsWith('/checkout/')) {
                     const params = new URLSearchParams(route.split('?')[1]);
-                    return <CheckoutPage id={route.split('/')[2].split('?')[0]} qty={params.get('qty') || 1} navigate={navigate} currentUser={currentUser} showToast={showToast} />;
+                    // Hanya Buyer yang dapat mengakses halaman checkout pesanan
+                    return <ProtectedRoute allowedRoles={['BUYER']} element={<CheckoutPage id={route.split('/')[2].split('?')[0]} qty={params.get('qty') || 1} navigate={navigate} currentUser={currentUser} showToast={showToast} />} />;
                 }
-                if (route === '/chat') return <ChatPage navigate={navigate} currentUser={currentUser} />;
+                if (route === '/chat') return <ProtectedRoute element={<ChatPage navigate={navigate} currentUser={currentUser} />} />;
                 
-                // Protected Routes
-                if (route === '/buyer/orders' && currentUser?.role === 'BUYER') return <BuyerDashboard currentUser={currentUser} showToast={showToast} />;
-                if (route === '/seller/dashboard' && currentUser?.role === 'SELLER') return <SellerDashboard currentUser={currentUser} showToast={showToast} />;
-                if (route === '/admin' && currentUser?.role === 'ADMIN') return <AdminDashboard />;
+                // Protected Dashboards dengan strict Role Validation
+                if (route === '/buyer/orders') return <ProtectedRoute allowedRoles={['BUYER']} element={<BuyerDashboard currentUser={currentUser} showToast={showToast} />} />;
+                if (route === '/seller/dashboard') return <ProtectedRoute allowedRoles={['SELLER']} element={<SellerDashboard currentUser={currentUser} showToast={showToast} />} />;
+                if (route === '/admin') return <ProtectedRoute allowedRoles={['ADMIN']} element={<AdminDashboard />} />;
                 
                 return <div className="p-20 text-center"><h1 className="text-2xl font-bold">404 - Halaman tidak ditemukan atau akses ditolak.</h1><Button className="mt-4" onClick={()=>navigate('/')}>Kembali ke Beranda</Button></div>;
             };
 
             // Mock Authentication Switcher (For Demo Purposes)
             const AuthSwitcher = () => (
-                <div className="fixed bottom-4 right-4 z-50 bg-white p-3 rounded-xl shadow-2xl border border-gray-200 hidden md:block">
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2 text-center">Simulasi Login Mode</p>
+                <div className="fixed bottom-4 right-4 z-50 bg-white p-3 rounded-xl shadow-2xl border border-gray-200 hidden md:block opacity-40 hover:opacity-100 transition-opacity">
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-2 text-center">Fast Switch (Dev)</p>
                     <div className="flex gap-2">
-                        <button onClick={() => { setCurrentUser(null); navigate('/'); }} className={`px-3 py-1.5 text-xs rounded font-medium ${!currentUser ? 'bg-gray-800 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}>Guest</button>
-                        <button onClick={() => { setCurrentUser(MOCK_USERS.buyer); navigate('/'); }} className={`px-3 py-1.5 text-xs rounded font-medium ${currentUser?.role === 'BUYER' ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}>Buyer</button>
-                        <button onClick={() => { setCurrentUser(MOCK_USERS.seller); navigate('/seller/dashboard'); }} className={`px-3 py-1.5 text-xs rounded font-medium ${currentUser?.role === 'SELLER' ? 'bg-agrivo-600 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}>Seller</button>
-                        <button onClick={() => { setCurrentUser(MOCK_USERS.admin); navigate('/admin'); }} className={`px-3 py-1.5 text-xs rounded font-medium ${currentUser?.role === 'ADMIN' ? 'bg-red-600 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}>Admin</button>
+                        <button onClick={() => { handleLogout(); }} className={`px-3 py-1.5 text-xs rounded font-medium ${!currentUser ? 'bg-gray-800 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}>Guest</button>
+                        <button onClick={() => { const u = MOCK_USERS_DB.find(u => u.role === 'BUYER'); setCurrentUser(u); navigate('/buyer/orders'); }} className={`px-3 py-1.5 text-xs rounded font-medium ${currentUser?.role === 'BUYER' ? 'bg-blue-600 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}>Buyer</button>
+                        <button onClick={() => { const u = MOCK_USERS_DB.find(u => u.role === 'SELLER'); setCurrentUser(u); navigate('/seller/dashboard'); }} className={`px-3 py-1.5 text-xs rounded font-medium ${currentUser?.role === 'SELLER' ? 'bg-agrivo-600 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}>Seller</button>
+                        <button onClick={() => { const u = MOCK_USERS_DB.find(u => u.role === 'ADMIN'); setCurrentUser(u); navigate('/admin'); }} className={`px-3 py-1.5 text-xs rounded font-medium ${currentUser?.role === 'ADMIN' ? 'bg-red-600 text-white' : 'bg-gray-100 hover:bg-gray-200'}`}>Admin</button>
                     </div>
                 </div>
             );
@@ -1656,19 +1831,26 @@
                                                 <span className="absolute -top-1 -right-1 flex h-3 w-3"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span><span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span></span>
                                             </i>
                                             <i className="fa-regular fa-bell text-gray-500 hover:text-agrivo-600 cursor-pointer text-lg"></i>
-                                            <div className="flex items-center gap-2 cursor-pointer bg-gray-50 px-3 py-1.5 rounded-full border border-gray-200"
-                                                 onClick={() => {
-                                                     if(currentUser.role === 'BUYER') navigate('/buyer/orders');
-                                                     if(currentUser.role === 'SELLER') navigate('/seller/dashboard');
-                                                     if(currentUser.role === 'ADMIN') navigate('/admin');
-                                                 }}>
-                                                <img src={currentUser.avatar} className="w-6 h-6 rounded-full" />
-                                                <span className="text-sm font-medium">{currentUser.name}</span>
+                                            
+                                            <div className="flex items-center gap-3 bg-gray-50 pl-3 pr-2 py-1.5 rounded-full border border-gray-200 group">
+                                                <div className="flex items-center gap-2 cursor-pointer" 
+                                                     onClick={() => {
+                                                         if(currentUser.role === 'BUYER') navigate('/buyer/orders');
+                                                         if(currentUser.role === 'SELLER') navigate('/seller/dashboard');
+                                                         if(currentUser.role === 'ADMIN') navigate('/admin');
+                                                     }}>
+                                                    <img src={currentUser.avatar} className="w-6 h-6 rounded-full" />
+                                                    <span className="text-sm font-medium hover:text-agrivo-600">{currentUser.name}</span>
+                                                </div>
+                                                <div className="w-px h-4 bg-gray-300"></div>
+                                                <button onClick={handleLogout} className="text-gray-500 hover:text-red-600 transition-colors p-1" title="Keluar">
+                                                    <i className="fa-solid fa-right-from-bracket"></i>
+                                                </button>
                                             </div>
                                         </>
                                     ) : (
                                         <div className="flex items-center space-x-4">
-                                            <button className="text-gray-600 font-semibold hover:text-agrivo-600 text-sm transition-colors" onClick={() => { showToast('Halaman Login belum diimplementasi di prototipe ini. Gunakan fitur Register terlebih dahulu.', 'info'); }}>Masuk</button>
+                                            <button className="text-gray-600 font-semibold hover:text-agrivo-600 text-sm transition-colors" onClick={() => navigate('/login')}>Masuk</button>
                                             <Button size="sm" className="text-sm py-2 px-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all rounded-lg" onClick={() => navigate('/register')}>Daftar</Button>
                                         </div>
                                     )}
@@ -1769,10 +1951,10 @@
                             <span className="text-[10px] font-medium">Chat</span>
                         </button>
                         <button onClick={() => {
-                            if(!currentUser) setCurrentUser(MOCK_USERS.buyer);
-                            else { setCurrentUser(null); navigate('/'); }
-                        }} className="flex flex-col items-center justify-center w-full h-full text-gray-400">
-                            <i className="fa-regular fa-user text-xl mb-1"></i>
+                            if(!currentUser) navigate('/login');
+                            else handleLogout();
+                        }} className={`flex flex-col items-center justify-center w-full h-full text-gray-400`}>
+                            <i className={`fa-solid ${currentUser ? 'fa-right-from-bracket' : 'fa-user'} text-xl mb-1`}></i>
                             <span className="text-[10px] font-medium">{currentUser ? 'Keluar' : 'Profil'}</span>
                         </button>
                     </div>
